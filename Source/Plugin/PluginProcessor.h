@@ -103,6 +103,7 @@ public:
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createLayout();
+    static BusesProperties makeBuses();
     void handleMidi (const juce::MidiMessage&);
     void handleSource (int source, float value01);
     void render (juce::AudioBuffer<float>& out, const juce::AudioBuffer<float>* in, int start, int end);

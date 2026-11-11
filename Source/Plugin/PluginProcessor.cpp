@@ -22,9 +22,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout PSM3Processor::createLayout(
 
 // Uscita stereo. L'ingresso audio (facoltativo, verso Input Ch 1 e 2) non viene dichiarato come
 // Audio Unit: uno strumento AU con ingressi non supera la validazione di alcuni host.
-static juce::AudioProcessor::BusesProperties makeBuses()
+juce::AudioProcessor::BusesProperties PSM3Processor::makeBuses()
 {
-    auto buses = juce::AudioProcessor::BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true);
+    auto buses = BusesProperties().withOutput ("Output", juce::AudioChannelSet::stereo(), true);
     if (juce::PluginHostType::getPluginLoadedAs() != juce::AudioProcessor::wrapperType_AudioUnit)
         buses = buses.withInput ("Input", juce::AudioChannelSet::stereo(), false);
     return buses;
