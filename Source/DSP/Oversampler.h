@@ -16,7 +16,9 @@ public:
 private:
     void push(double v);
     double convolve() const;
+    struct Tap { int index; double coeff; };
     std::vector<double> h, buf;
+    std::vector<Tap> taps_;
     int pos = 0;
 };
 

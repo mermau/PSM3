@@ -70,14 +70,7 @@ double DiodeLadderFilter::process(double in, double cv)
             { -hh * d12,                1.0 + hh * (d12 + d23),    -hh * d23,                 0.0,                        0.0 },
             { 0.0,                      -hh * d23,                 1.0 + hh * (d23 + d34),    -hh * d34,                  0.0 },
             { 0.0,                      0.0,                       -hh * d34,                 1.0 + hh * (d34 + d4),      0.0 } };
-        double maxRes = 0.0;
-        for (int i = 0; i < 4; ++i)
-        {
-            const double res = y[i] - x[i] - hh * (fPrev[i] + F[i]);
-            J[i][4] = -res;
-            maxRes = std::max(maxRes, std::fabs(res));
-        }
-        if (maxRes < 1e-9) break;
+        for (int i = 0; i < 4; ++i) J[i][4] = -(y[i] - x[i] - hh * (fPrev[i] + F[i]));
         for (int k = 0; k < 4; ++k)                 // eliminazione di Gauss (matrice a dominanza diagonale)
         {
             const double inv = 1.0 / J[k][k];
@@ -95,7 +88,13 @@ double DiodeLadderFilter::process(double in, double cv)
             for (int j = i + 1; j < 4; ++j) s -= J[i][j] * dy[j];
             dy[i] = s / J[i][i];
         }
-        for (int i = 0; i < 4; ++i) y[i] += std::min(2.0, std::max(-2.0, dy[i]));     // passo limitato
+        double maxStep = 0.0;
+        for (int i = 0; i < 4; ++i)
+        {
+            y[i] += std::min(2.0, std::max(-2.0, dy[i]));     // passo limitato
+            maxStep = std::max(maxStep, std::fabs(dy[i]));
+        }
+        if (maxStep < 1e-8) break;                            // sempre almeno un passo di Newton
     }
 
     // derivata al punto accettato, per il passo successivo

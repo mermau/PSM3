@@ -29,6 +29,9 @@ void HalfbandStage::design(int taps, double transition)
         sum += h[(size_t) i];
     }
     for (auto& c : h) c /= sum;
+    // in un filtro a meta' banda quasi meta' dei coefficienti e' nulla: si saltano
+    taps_.clear();
+    for (int i = 0; i < taps; ++i) if (std::fabs(h[(size_t) i]) > 1e-12) taps_.push_back({ i, h[(size_t) i] });
     buf.assign(h.size(), 0.0);
     pos = 0;
 }
@@ -45,11 +48,10 @@ double HalfbandStage::convolve() const
 {
     const int n = (int) h.size();
     double acc = 0.0;
-    int idx = pos;                                    // campione piu' vecchio
-    for (int i = 0; i < n; ++i)
+    for (const auto& t : taps_)                       // pos = campione piu' vecchio
     {
-        acc += h[(size_t) i] * buf[(size_t) idx];
-        if (++idx >= n) idx = 0;
+        int idx = pos + t.index; if (idx >= n) idx -= n;
+        acc += t.coeff * buf[(size_t) idx];
     }
     return acc;
 }

@@ -19,6 +19,7 @@ private:
     double sr = 192000.0, tilt = 0.0, levelDb = -70.0, pan = 0.5;
     double toneState = 0.0, toneCoeff = 0.0;
     double spHp1 = 0.0, spHp2 = 0.0, spLp1 = 0.0, spLp2 = 0.0, spHpCoeff = 0.0, spLpCoeff = 0.0;
+    double cachedDb = 1e9, cachedGain = 0.0;
     bool speaker = false;
 };
 }

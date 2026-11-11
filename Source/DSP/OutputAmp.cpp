@@ -36,7 +36,8 @@ double OutputAmp::process(double in, double levelCv)
 
     // modulatore a FET: 15 dB per volt
     const double db = std::min(9.0, std::max(kFloorDb, levelDb + 15.0 * levelCv));
-    const double gain = std::max(0.0, std::pow(10.0, db / 20.0) - kFloorGain);
+    if (db != cachedDb) { cachedDb = db; cachedGain = std::max(0.0, std::exp(db * 0.11512925464970229) - kFloorGain); }
+    const double gain = cachedGain;
     if (gain == 0.0) return 0.0;
     v *= gain;
 
