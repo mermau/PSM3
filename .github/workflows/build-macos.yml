@@ -26,23 +26,31 @@ jobs:
         run: cmake -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DPSM3_BUILD_DEVTOOLS=ON
 
       - name: Compila
-        run: cmake --build build --config Release --parallel
+        run: |
+          if ! cmake --build build --config Release --parallel > build.log 2>&1; then
+            grep -n -E "error:|error |Undefined symbols|ld: |fatal" -A4 build.log | head -200
+            exit 1
+          fi
+          tail -n 5 build.log
 
       - name: Test del motore
-        run: ctest --test-dir build -C Release --output-on-failure
+        run: |
+          set -o pipefail
+          ctest --test-dir build -C Release --output-on-failure 2>&1 | tee ctest.log
 
       - name: Test del processore
         run: |
           T=$(find build -type f -name processor_test -perm +111 | head -n 1)
-          test -n "$T" && "$T"
+          set -o pipefail
+          test -n "$T" && "$T" 2>&1 | tee processor_test.log
 
       - name: Istantanea dell'interfaccia
         continue-on-error: true
         run: |
           T=$(find build -type f -name gui_snapshot -perm +111 | head -n 1)
           test -n "$T"
-          "$T" gui.png 1.0 1
-          "$T" gui-piccola.png 0.5 0
+          "$T" gui.png 1.0 1 2>&1 | tee gui_snapshot.log
+          "$T" gui-piccola.png 0.5 0 2>&1 | tee -a gui_snapshot.log
 
       - name: Carica l'istantanea
         if: always()
@@ -58,7 +66,7 @@ jobs:
           mkdir -p "$HOME/Library/Audio/Plug-Ins/Components"
           cp -R "build/PSM3_artefacts/Release/AU/PSM-3.component" "$HOME/Library/Audio/Plug-Ins/Components/"
           killall -9 AudioComponentRegistrar 2>/dev/null || true
-          auval -v aumu Psm3 Coef
+          auval -v aumu Psm3 Coef 2>&1 | tee auval.log
 
       - name: Firma ad-hoc e pacchetto
         run: |
@@ -73,6 +81,30 @@ jobs:
           lipo -archs "dist/PSM-3/PSM-3.vst3/Contents/MacOS/PSM-3" | grep -q arm64
           lipo -archs "dist/PSM-3/PSM-3.vst3/Contents/MacOS/PSM-3" | grep -q x86_64
           (cd dist && ditto -c -k --keepParent "PSM-3" ../PSM-3-macOS.zip)
+
+      # Pubblica errori, esiti dei test e immagine dell'interfaccia sul ramo "ci-logs",
+      # leggibile da chiunque senza accedere a GitHub.
+      - name: Pubblica i log sul ramo ci-logs
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p ci
+          echo "commit $GITHUB_SHA  -  $(date -u)" > ci/esito.txt
+          if [ -f build.log ]; then
+            grep -n -E "error:|error |Undefined symbols|ld: |fatal|BUILD (SUCCEEDED|FAILED)" -A6 build.log | head -n 600 > ci/errori.txt || true
+            grep -E "warning:" build.log | grep -E "Source/|Tests/" | sort | uniq -c | sort -rn | head -n 150 > ci/avvisi.txt || true
+            tail -n 80 build.log > ci/build-coda.txt
+          fi
+          cp ctest.log processor_test.log gui_snapshot.log auval.log gui*.png ci/ 2>/dev/null || true
+          ls -la ci
+          cd ci
+          git init -q
+          git checkout -q -b ci-logs
+          git add -A
+          git -c user.name="ci" -c user.email="ci@localhost" commit -q -m "Log della build $GITHUB_SHA"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci-logs
 
       - name: Carica il pacchetto
         uses: actions/upload-artifact@v4
