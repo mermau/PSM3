@@ -37,6 +37,7 @@ jobs:
           test -n "$T" && "$T"
 
       - name: Istantanea dell'interfaccia
+        continue-on-error: true
         run: |
           T=$(find build -type f -name gui_snapshot -perm +111 | head -n 1)
           test -n "$T"

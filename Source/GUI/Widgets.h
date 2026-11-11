@@ -52,6 +52,7 @@ class Toggle : public ParamWidget
 public:
     enum class Style { Lever, Button };
     Toggle (PSM3Processor& p, psm3::ParamId id, Style s, bool invert = false);
+    ~Toggle() override { if (style == Style::Button && dragging) { dragTo (0.0f); endDrag(); } }     // mai un pulsante rimasto premuto
     void paint (juce::Graphics&) override;
     void mouseDown (const juce::MouseEvent&) override;
     void mouseUp (const juce::MouseEvent&) override;

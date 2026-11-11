@@ -208,8 +208,17 @@ void PSM3Engine::tick(double ext1, double ext2, double& left, double& right)
     if (active.colUsed[cOut2]) { b = out2.process(cols[cOut2], cols[cLevel2]); if (sanitize(b)) out2.reset(); }
     double l1, r1, l2, r2;
     out1.panGains(l1, r1); out2.panGains(l2, r2);
-    left = a * l1 + b * l2;
-    right = a * r1 + b * r2;
+    // Limite di sicurezza: lineare fino a 1,3 V, poi piega dolcemente e non supera 1,7 V. Il margine
+    // copre la sovraelongazione del filtro di decimazione, cosi' l'uscita resta sotto 0 dBFS.
+    auto limit = [] (double v)
+    {
+        const double m = std::fabs(v);
+        if (m <= 1.3) return v;
+        const double y = 1.3 + 0.4 * std::tanh((m - 1.3) / 0.4);
+        return v < 0.0 ? -y : y;
+    };
+    left = limit(a * l1 + b * l2);
+    right = limit(a * r1 + b * r2);
 }
 
 void PSM3Engine::process(const float* inL, const float* inR, float* outL, float* outR, int numSamples)
@@ -272,6 +281,9 @@ void PSM3Engine::process(const float* inL, const float* inR, float* outL, float*
             l *= mainsGain; r *= mainsGain;
             if (! std::isfinite(l)) l = 0.0;
             if (! std::isfinite(r)) r = 0.0;
+            // ultimo fermo: i rari picchi di sovraelongazione del decimatore non superano 0 dBFS
+            l = std::min(1.0, std::max(-1.0, l));
+            r = std::min(1.0, std::max(-1.0, r));
             outL[i] = (float) l; outR[i] = (float) r;
         }
         if (! mainsOn && mainsGain <= 0.0) { const bool keep = mainsOn; reset(); mainsOn = keep; mainsGain = 0.0; }

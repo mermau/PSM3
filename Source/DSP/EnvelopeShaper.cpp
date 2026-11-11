@@ -54,7 +54,7 @@ EnvelopeShaper::Out EnvelopeShaper::process(double in, double decayCv)
 
     Out o;
     o.trapezoid = trapLevel * (4.0 - 7.0 * e);          // +4 V a riposo, -3 V in On
-    o.signal = signalLevel * in * (kSignalGain * e + 0.0015);   // residuo a inviluppo chiuso: circa -56 dB
+    o.signal = signalLevel * in * (kSignalGain * e + 0.0004);   // residuo a inviluppo chiuso: circa -68 dB (sotto 1 mV)
     return o;
 }
 }

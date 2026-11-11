@@ -19,6 +19,7 @@ public:
     void releaseResources() override {}
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlockBypassed (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override { return true; }
@@ -90,7 +91,7 @@ public:
 
     //==========================================================================
     // Opzioni e indicatori
-    void setQuality (int factor)         { quality.store (factor == 2 ? 2 : 4); }
+    void setQuality (int factor);
     int  getQuality() const              { return quality.load(); }
     void setWarmUp (bool on)             { warmUp.store (on); engine.setWarmUp (on); }
     bool getWarmUp() const               { return warmUp.load(); }
@@ -122,7 +123,8 @@ private:
     std::atomic<int> learningParam { -1 }, mapVersion { 0 };
 
     std::atomic<int> quality { 4 };
-    int activeQuality = 4;
+    bool isPrepared = false;
+    juce::CriticalSection pushLock;
     std::atomic<bool> warmUp { false };
     std::atomic<float> uiScale { 0.0f };       // 0 = non ancora scelta
     mutable juce::SpinLock nameLock;

@@ -15,7 +15,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PSM3Processor::createLayout(
             layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { info.key, 1 }, info.name, info.def >= 0.5));
         else
             layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID { info.key, 1 }, info.name,
-                                                                     juce::NormalisableRange<float> (0.0f, 10.0f, 0.001f), (float) info.def));
+                                                                     juce::NormalisableRange<float> (0.0f, 10.0f), (float) info.def));
     }
     return layout;
 }
@@ -66,8 +66,7 @@ void PSM3Processor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     currentSampleRate = sampleRate;
     currentBlock = juce::jmax (16, samplesPerBlock);
-    activeQuality = quality.load();
-    engine.setQuality (activeQuality);
+    engine.setQuality (quality.load());
     engine.setWarmUp (warmUp.load());
     for (int i = 0; i < kNumParams; ++i) engine.setParam ((ParamId) i, (double) raw[(size_t) i]->load());
     engine.prepare (sampleRate, currentBlock);
@@ -75,13 +74,37 @@ void PSM3Processor::prepareToPlay (double sampleRate, int samplesPerBlock)
     inputCopy.setSize (2, currentBlock, false, true, true);
     setLatencySamples (engine.latencySamples());
     keyboardState.reset();
+    isPrepared = true;
+}
+
+// Cambio di qualita' (2x/4x) dal menu: si riprepara il motore fuori dal thread audio, a elaborazione sospesa.
+void PSM3Processor::setQuality (int factor)
+{
+    factor = factor == 2 ? 2 : 4;
+    if (quality.exchange (factor) == factor || ! isPrepared) return;
+    suspendProcessing (true);
+    {
+        const juce::ScopedLock lock (getCallbackLock());
+        engine.setQuality (factor);
+        engine.prepare (currentSampleRate, currentBlock);
+    }
+    pushPinsToEngine();
+    setLatencySamples (engine.latencySamples());
+    suspendProcessing (false);
+}
+
+void PSM3Processor::processBlockBypassed (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi)
+{
+    engine.allNotesOff();           // un note-off perso durante il bypass non deve lasciare una nota tenuta
+    AudioProcessor::processBlockBypassed (buffer, midi);
 }
 
 void PSM3Processor::render (juce::AudioBuffer<float>& out, const juce::AudioBuffer<float>* in, int start, int end)
 {
+    const int chunkMax = inputCopy.getNumSamples();
+    if (chunkMax <= 0) { out.clear (start, end - start); return; }      // non ancora preparato
     auto* outL = out.getWritePointer (0);
     auto* outR = out.getNumChannels() > 1 ? out.getWritePointer (1) : nullptr;
-    const int chunkMax = inputCopy.getNumSamples();
     while (start < end)
     {
         const int n = juce::jmin (chunkMax, end - start);
@@ -111,15 +134,6 @@ void PSM3Processor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBu
     if (numSamples <= 0) return;
 
     keyboardState.processNextMidiBuffer (midi, 0, numSamples, true);
-
-    // Cambio di qualita' (2x/4x): azione rara dal menu, richiede di ripreparare il motore.
-    if (quality.load() != activeQuality)
-    {
-        activeQuality = quality.load();
-        engine.setQuality (activeQuality);
-        engine.prepare (currentSampleRate, currentBlock);
-        pushPinsToEngine();
-    }
 
     for (int i = 0; i < kNumParams; ++i) engine.setParam ((ParamId) i, (double) raw[(size_t) i]->load());
 
@@ -265,6 +279,7 @@ psm3::PinGrid PSM3Processor::getPins() const
 
 void PSM3Processor::pushPinsToEngine()
 {
+    const juce::ScopedLock order (pushLock);        // due thread non audio non devono scavalcarsi
     psm3::PinGrid copy;
     { const juce::SpinLock::ScopedLockType lock (pinLock); copy = pins; }
     engine.setPins (copy, toleranceSeed.load());

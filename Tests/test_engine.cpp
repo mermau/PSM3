@@ -149,7 +149,16 @@ int main()
         h.e.setPins(grid({ "H10", "N10", "G10", "H14", "B10", "C14", "M10" }), 7);
         h.set(ParamId::filtResponse, 10); h.set(ParamId::filtLevel, 10); h.set(ParamId::revLevel, 10); h.set(ParamId::revMix, 10);
         h.set(ParamId::out1Level, 10); h.set(ParamId::out2Level, 10);
-        CHECK(allFinite(h.run(5.0), 2.0));
+        CHECK(allFinite(h.run(5.0), 1.0));                                  // l'uscita del plugin non supera mai 0 dBFS
+        for (double sr : { 44100.0, 192000.0 })
+        {
+            Host q(sr, 512);
+            // caso peggiore: tutto a 10 nelle due uscite, entrambe girate a sinistra
+            q.e.setPins(grid({ "H10", "N10", "B10", "C10", "B2", "C2", "B3", "C3", "B5", "C5", "B7", "C7", "O5", "P6" }), 7);
+            for (int i = 0; i < (int) ParamId::Count; ++i) if (! paramInfo((ParamId) i).isSwitch) q.set((ParamId) i, 10);
+            q.set(ParamId::out1Pan, 0); q.set(ParamId::out2Pan, 0);
+            CHECK(allFinite(q.run(3.0), 1.0));
+        }
     }
     { // engine_pin_swap_live: pin cambiati da un altro thread mentre suona
         Host h; keyboardPatch(h);

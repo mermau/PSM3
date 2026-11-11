@@ -77,7 +77,7 @@ const ToggleSpec kToggles[] = {
     { ParamId::speaker1,     715,  764,  30, 40, ui::Toggle::Style::Lever, false },
     { ParamId::speaker2,     850,  764,  30, 40, ui::Toggle::Style::Lever, false },
     { ParamId::meterMode,    1170, 690,  30, 44, ui::Toggle::Style::Lever, true },
-    { ParamId::mains,        1085, 885,  32, 46, ui::Toggle::Style::Lever, false },
+    { ParamId::mains,        1085, 885,  32, 46, ui::Toggle::Style::Lever, true },    // acceso = levetta in giu', verso ON
     { ParamId::attackButton, 1140, 1065, 60, 60, ui::Toggle::Style::Button, false },
     { ParamId::kbCh1Mode,    275,  1500, 30, 44, ui::Toggle::Style::Lever, false },
     { ParamId::kbCh2Mode,    275,  1612, 30, 44, ui::Toggle::Style::Lever, false },
