@@ -42,26 +42,34 @@ struct Rng
     }
 };
 
-// Deriva lenta: rumore passa-basso a frequenza bassissima, uscita circa in [-1,1].
+// Deriva lenta e limitata in [-1,1]: somma di tre sinusoidi lentissime con fasi e
+// frequenze ricavate dal seme. seed 0 = nessuna deriva.
 struct SlowDrift
 {
-    Rng rng; double y1 = 0.0, y2 = 0.0, coeff = 0.0; bool enabled = false;
-    void prepare(double sr, uint32_t seedValue, double cornerHz = 0.05)
+    double phase[3] = { 0, 0, 0 }, inc[3] = { 0, 0, 0 };
+    bool enabled = false;
+    void prepare(double sr, uint32_t seedValue)
     {
         enabled = seedValue != 0;
-        rng.seed(seedValue * 2654435761u + 1u);
-        coeff = 1.0 - std::exp(-kTwoPi * cornerHz / sr);
-        // partenza da un valore casuale, cosi' ogni dispositivo e' gia' "fuori taratura"
-        y1 = y2 = enabled ? rng.bipolar() * 0.5 : 0.0;
-        gain = 1.0 / std::sqrt(std::max(1e-12, coeff));
+        Rng rng; rng.seed(seedValue * 2654435761u + 12345u);
+        static const double base[3] = { 0.031, 0.083, 0.19 };      // Hz
+        for (int i = 0; i < 3; ++i)
+        {
+            phase[i] = rng.uniform() * kTwoPi;
+            inc[i] = kTwoPi * base[i] * (0.7 + 0.6 * rng.uniform()) / sr;
+        }
     }
     double process()
     {
         if (! enabled) return 0.0;
-        y1 += coeff * (rng.bipolar() * gain * 0.6 - y1);
-        y2 += coeff * (y1 - y2);
-        return std::max(-1.0, std::min(1.0, y2));
+        double v = 0.0;
+        static const double w[3] = { 0.5, 0.3, 0.2 };
+        for (int i = 0; i < 3; ++i)
+        {
+            phase[i] += inc[i]; if (phase[i] > kTwoPi) phase[i] -= kTwoPi;
+            v += w[i] * std::sin(phase[i]);
+        }
+        return v;
     }
-    double gain = 1.0;
 };
 }
