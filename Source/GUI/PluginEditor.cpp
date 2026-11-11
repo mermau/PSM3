@@ -406,23 +406,23 @@ void PanelContent::drawLowerPanel (juce::Graphics& g)
     }
 
     // colonne: ingressi di segnale e di controllo
-    static const char* cols[16] = { "Meter", "Output Ch.1", "Output Ch.2", "Envelope", "Ring Mod. A", "Ring Mod. B", "Reverb", "Filter",
-                                    "Osc. Freq. 1", "Osc. Freq. 2", "Osc. Freq. 3", "Decay", "Reverb Mix", "Filter Frq.", "Out Level 1", "Out Level 2" };
+    static const char* cols[16] = { "Meter", "Out Ch.1", "Out Ch.2", "Envelope", "Ring A", "Ring B", "Reverb", "Filter",
+                                    "Osc.Frq 1", "Osc.Frq 2", "Osc.Frq 3", "Decay", "Rev. Mix", "Filt.Frq", "Level 1", "Level 2" };
     for (int c = 0; c < 16; ++c)
     {
         const float x = mb.getX() + (c + 0.5f) * cw;
         {
             juce::Graphics::ScopedSaveState save (g);
             g.addTransform (juce::AffineTransform::rotation (-juce::MathConstants<float>::halfPi, x, mb.getY() - 10.0f));
-            ui::textAt (g, cols[c], x, mb.getY() - 10.0f, 10.5f, false, juce::Justification::centredLeft, 90.0f);
+            ui::textAt (g, cols[c], x, mb.getY() - 10.0f, 10.0f, false, juce::Justification::centredLeft, 90.0f);
         }
         ui::tag (g, juce::String::charToString ((juce::juce_wchar) ('A' + c)), x, mb.getBottom() + 14.0f, 10.5f, c < 8);
         g.setColour (t.ink);
     }
-    ui::textAt (g, "SIGNAL INPUTS", mb.getX() + 4.0f * cw, 812.0f, 10.5f, true);
-    ui::textAt (g, "CONTROL INPUTS", mb.getX() + 12.0f * cw, 812.0f, 10.5f, true);
-    g.drawLine (mb.getX() + 2.0f, 820.0f, mb.getX() + 8.0f * cw - 4.0f, 820.0f, 1.0f);
-    g.drawLine (mb.getX() + 8.0f * cw + 4.0f, 820.0f, mb.getRight() - 2.0f, 820.0f, 1.0f);
+    ui::textAt (g, "SIGNAL INPUTS", mb.getX() + 4.0f * cw, 810.0f, 10.0f, true);
+    ui::textAt (g, "CONTROL INPUTS", mb.getX() + 12.0f * cw, 810.0f, 10.0f, true);
+    g.drawLine (mb.getX() + 2.0f, 818.0f, mb.getX() + 8.0f * cw - 4.0f, 818.0f, 1.0f);
+    g.drawLine (mb.getX() + 8.0f * cw + 4.0f, 818.0f, mb.getRight() - 2.0f, 818.0f, 1.0f);
 
     // targhetta (apre il menu)
     const auto np = kNameplate.toFloat();
@@ -457,7 +457,6 @@ void PanelContent::drawKeyboardPanel (juce::Graphics& g)
     const auto& t = ui::theme();
     g.setColour (t.ink);
     g.drawRect (juce::Rectangle<float> (kLeft + 8.0f, kKbTop + 8.0f, 296.0f, kKbBottom - kKbTop - 16.0f), 1.4f);
-    ui::textAt (g, "KEYBOARD OSCILLATOR", 134.0f, kKbTop + 22.0f, 10.5f, true);
     ui::textAt (g, "SPREAD", 180.0f, 1548.0f, 9.5f);
     ui::textAt (g, "RANGE", 180.0f, 1660.0f, 9.5f);
     ui::textAt (g, "INP. CH.1", 275.0f, 1456.0f, 9.5f, true);
@@ -466,7 +465,7 @@ void PanelContent::drawKeyboardPanel (juce::Graphics& g)
     ui::textAt (g, "INP. CH.2", 275.0f, 1568.0f, 9.5f, true);
     ui::textAt (g, "dynamic v.", 275.0f, 1582.0f, 8.5f);
     ui::textAt (g, "kbd voltage", 275.0f, 1644.0f, 8.5f);
-    ui::textAt (g, "DK1", 300.0f, kKbBottom - 18.0f, 10.0f, true);
+    ui::textAt (g, "DK1 KEYBOARD", 268.0f, kKbBottom - 18.0f, 9.0f, true);
     g.setColour (juce::Colours::black.withAlpha (0.5f));
     g.fillRect (juce::Rectangle<float> (341.0f, 1428.0f, 863.0f, 256.0f));
 }
@@ -486,7 +485,7 @@ PSM3Editor::PSM3Editor (PSM3Processor& p) : AudioProcessorEditor (p), proc (p), 
     {
         scale = 0.6f;
         if (const auto* display = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay())
-            scale = (float) display->userArea.getHeight() * 0.86f / (float) PanelContent::baseH;
+            scale = (float) display->userBounds.getHeight() * 0.86f / (float) PanelContent::baseH;
     }
     scale = juce::jlimit (0.4f, 2.0f, scale);
     setSize (juce::roundToInt (PanelContent::baseW * scale), juce::roundToInt (PanelContent::baseH * scale));
