@@ -1,0 +1,90 @@
+name: Build macOS
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write   # per pubblicare le release quando si crea un tag v*
+
+jobs:
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache JUCE
+        uses: actions/cache@v4
+        with:
+          path: build/_deps
+          key: juce-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+
+      - name: Configura (binario universale arm64 + x86_64)
+        run: cmake -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DPSM3_BUILD_DEVTOOLS=ON
+
+      - name: Compila
+        run: cmake --build build --config Release --parallel
+
+      - name: Test del motore
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Test del processore
+        run: |
+          T=$(find build -type f -name processor_test -perm +111 | head -n 1)
+          test -n "$T" && "$T"
+
+      - name: Istantanea dell'interfaccia
+        run: |
+          T=$(find build -type f -name gui_snapshot -perm +111 | head -n 1)
+          test -n "$T"
+          "$T" gui.png 1.0 1
+          "$T" gui-piccola.png 0.5 0
+
+      - name: Carica l'istantanea
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-snapshot
+          path: gui*.png
+          if-no-files-found: warn
+
+      - name: Validazione Audio Unit (auval)
+        continue-on-error: true
+        run: |
+          mkdir -p "$HOME/Library/Audio/Plug-Ins/Components"
+          cp -R "build/PSM3_artefacts/Release/AU/PSM-3.component" "$HOME/Library/Audio/Plug-Ins/Components/"
+          killall -9 AudioComponentRegistrar 2>/dev/null || true
+          auval -v aumu Psm3 Coef
+
+      - name: Firma ad-hoc e pacchetto
+        run: |
+          A=build/PSM3_artefacts/Release
+          mkdir -p "dist/PSM-3"
+          cp -R "$A/VST3/PSM-3.vst3" "$A/AU/PSM-3.component" "$A/Standalone/PSM-3.app" "dist/PSM-3/"
+          for p in "dist/PSM-3/"*; do codesign --force --deep --sign - "$p"; done
+          cp scripts/installa.command "dist/PSM-3/Installa PSM-3.command"
+          chmod +x "dist/PSM-3/Installa PSM-3.command"
+          cp LEGGIMI.md "dist/PSM-3/"
+          lipo -info "dist/PSM-3/PSM-3.vst3/Contents/MacOS/PSM-3"
+          lipo -archs "dist/PSM-3/PSM-3.vst3/Contents/MacOS/PSM-3" | grep -q arm64
+          lipo -archs "dist/PSM-3/PSM-3.vst3/Contents/MacOS/PSM-3" | grep -q x86_64
+          (cd dist && ditto -c -k --keepParent "PSM-3" ../PSM-3-macOS.zip)
+
+      - name: Carica il pacchetto
+        uses: actions/upload-artifact@v4
+        with:
+          name: PSM-3-macOS
+          path: PSM-3-macOS.zip
+          if-no-files-found: error
+
+      - name: Pubblica la release (solo per i tag v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" PSM-3-macOS.zip \
+            --title "PSM-3 ${GITHUB_REF_NAME}" \
+            --notes "Build macOS universale (Apple Silicon e Intel) con VST3, AU e Standalone."
