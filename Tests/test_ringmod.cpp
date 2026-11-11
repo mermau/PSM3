@@ -37,11 +37,23 @@ int main()
         auto xb = run(r, dc(0.0), sine(261.0, 0.75));
         CHECK(meas::db(meas::rms(xb) / (0.75 / std::sqrt(2.0))) < -55.0);
     }
-    { // accoppiato in continua: una tensione costante lascia passare l'altro ingresso
-        auto x = run(r, sine(261.0, 0.5), dc(1.0));
-        CHECK(meas::goertzelDb(x, SR, 261.0) > meas::db(0.5));
-        auto y = run(r, sine(261.0, 0.5), dc(-1.0));
-        CHECK(x[1000] * y[1000] < 0.0);                              // segno invertito
+    { // ingressi accoppiati in alternata: con una tensione costante su un ingresso l'uscita si spegne
+      // ("differenzia": manuale d'uso, esperimenti 9, 12 e 19) e ricompare solo quando la tensione cambia
+        r.reset(); std::vector<double> early, late, moved;
+        for (int i = 0; i < (int) (3.0 * SR); ++i)
+        {
+            const double v = r.process(0.5 * std::sin(2.0 * M_PI * 261.0 * i / SR), 1.0);
+            if (i < (int) (0.02 * SR)) early.push_back(v);
+            if (i > (int) (2.5 * SR)) late.push_back(v);
+        }
+        CHECK(meas::rms(early) > 0.2);                               // il gradino iniziale fa passare il suono
+        CHECK(meas::db(meas::rms(late) / meas::rms(early)) < -40.0); // poi tace
+        for (int i = 0; i < (int) (0.02 * SR); ++i) moved.push_back(r.process(0.5 * std::sin(2.0 * M_PI * 261.0 * i / SR), -1.0));
+        CHECK(meas::rms(moved) > 0.2);                               // la tensione si muove: il suono torna
+        // un'onda quadra lenta spezzetta il suono senza spegnerlo (esperimento 19, E5)
+        r.reset(); std::vector<double> chopped;
+        for (int i = 0; i < (int) (1.0 * SR); ++i) chopped.push_back(r.process(0.5 * std::sin(2.0 * M_PI * 261.0 * i / SR), (i / 9600) % 2 ? 1.0 : -1.0));
+        CHECK(meas::rms(chopped) > 0.2);
     }
     { // sovraccarico: non oltre circa 6 V p-p
         auto x = run(r, sine(300.0, 6.0), sine(1000.0, 6.0));

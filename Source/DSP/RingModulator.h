@@ -1,4 +1,6 @@
-// PSM-3 — Modulatore ad anello a transistor (doppio bilanciamento), accoppiato in continua.
+// PSM-3 — Modulatore ad anello a transistor (doppio bilanciamento).
+// Gli ingressi sono accoppiati in alternata (C42/C44 da 2,5 uF): con una tensione costante
+// su un ingresso l'uscita si spegne, come descritto nel manuale d'uso ("differenzia").
 #pragma once
 #include "Volts.h"
 
@@ -7,12 +9,22 @@ namespace psm3
 class RingModulator
 {
 public:
-    void prepare(double sampleRate) { sr = sampleRate; drift.prepare(sr, driftSeed); }
-    void reset() { drift.prepare(sr, driftSeed); }
+    void prepare(double sampleRate)
+    {
+        sr = sampleRate;
+        acCoeff = 1.0 - std::exp(-kTwoPi * 2.0 / sr);          // taglio a circa 2 Hz
+        drift.prepare(sr, driftSeed);
+        acA = acB = 0.0;
+    }
+    void reset() { drift.prepare(sr, driftSeed); acA = acB = 0.0; }
     void setLevel(double d) { level = dialNorm(d); }
     void setDriftSeed(uint32_t s) { driftSeed = s; drift.prepare(sr, s); }
     double process(double a, double b)
     {
+        if (! std::isfinite(a)) a = 0.0;
+        if (! std::isfinite(b)) b = 0.0;
+        acA += acCoeff * (a - acA); a -= acA;
+        acB += acCoeff * (b - acB); b -= acB;
         // Ingressi lineari fino a circa 1,5 V p-p, poi saturazione dolce delle coppie differenziali.
         const double sa = std::tanh(a), sb = std::tanh(b);
         double v = kGain * sa * sb;
@@ -26,7 +38,7 @@ public:
     }
     static constexpr double kGain = 4.4;
 private:
-    double sr = 192000.0, level = 0.0;
+    double sr = 192000.0, level = 0.0, acCoeff = 0.0, acA = 0.0, acB = 0.0;
     uint32_t driftSeed = 0;
     SlowDrift drift;
 };
