@@ -94,7 +94,7 @@ double DiodeLadderFilter::process(double in, double cv)
             y[i] += std::min(2.0, std::max(-2.0, dy[i]));     // passo limitato
             maxStep = std::max(maxStep, std::fabs(dy[i]));
         }
-        if (maxStep < 1e-8) break;                            // sempre almeno un passo di Newton
+        if (maxStep < 1e-5) break;                            // sempre almeno un passo di Newton
     }
 
     // derivata al punto accettato, per il passo successivo
