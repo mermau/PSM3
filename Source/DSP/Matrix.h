@@ -23,8 +23,9 @@ class Matrix
 public:
     static constexpr double kRin = 10000.0;
 
-    // Bianco 2k7 +/-5 %, rosso 2k7 +/-2 %, verde 68k +/-5 %. Lo scostamento dipende solo da
-    // (seed, riga, colonna); seed 0 = valori nominali esatti.
+    // Bianco 2k7 +/-5 %, verde 68k +/-5 %; lo scostamento dipende solo da (seed, riga, colonna)
+    // e seed 0 = valori nominali esatti. Il rosso (pin di precisione, 2 % nell'originale) qui e'
+    // esatto a 2k7, cosi' un patch intonato da tastiera resta intonato su ogni istanza.
     static double pinOhms(Pin p, int row, int col, uint32_t seed);
 
     // Risolve la rete. Da chiamare fuori dal thread audio.

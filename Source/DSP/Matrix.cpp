@@ -31,7 +31,7 @@ double Matrix::pinOhms(Pin p, int row, int col, uint32_t seed)
     switch (p)
     {
         case Pin::White: break;
-        case Pin::Red:   tol = 0.02; break;
+        case Pin::Red:   tol = 0.0; break;      // pin "di precisione": valore esatto (vedi nota in Matrix.h)
         case Pin::Green: nominal = 68000.0; break;
         case Pin::None:  return 0.0;
     }
