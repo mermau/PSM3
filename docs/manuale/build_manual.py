@@ -70,10 +70,10 @@ def matrix_svg(pins, size=150, labels=True):
     return "".join(o)
 
 def crop(x, y, w, h, width_mm, cls=""):
-    """Ritaglio dell'immagine dell'interfaccia (coordinate in pixel sull'immagine 1240x1700)."""
+    """Ritaglio dell'immagine dell'interfaccia (coordinate in pixel sull'immagine 2432x930)."""
     s = width_mm / w
     return (f'<div class="crop {cls}" style="width:{width_mm:.1f}mm;height:{h*s:.1f}mm">'
-            f'<img src="img/gui.png" style="width:{1240*s:.2f}mm;margin-left:{-x*s:.2f}mm;margin-top:{-y*s:.2f}mm" alt=""></div>')
+            f'<img src="img/gui.png" style="width:{2432*s:.2f}mm;margin-left:{-x*s:.2f}mm;margin-top:{-y*s:.2f}mm" alt=""></div>')
 
 def tag(text, colour=None):
     style = f' style="background:{colour}"' if colour else ""
@@ -190,15 +190,15 @@ come Audio Unit.</li>
 <li>Per usarlo senza DAW apri <strong>PSM-3.app</strong> dalla cartella Applicazioni e scegli scheda audio e tastiera MIDI
 dal menu <em>Options</em>.</li></ol>
 <h2>La finestra</h2>
-<div class="fig">{crop(0, 0, 1240, 1700, 92)}<div class="figtxt">
-<p>La finestra ripete la forma dello strumento.</p>
-<p><strong>In alto</strong>, il pannello verticale con i dispositivi: i tre oscillatori a sinistra, i trattamenti a
-destra, lo strumento a lancetta in basso.</p>
-<p><strong>Al centro</strong>, il pannello orizzontale: la matrice, il joystick, il pulsante Attack e i comandi delle
-due uscite. La targhetta <em>PSM-3</em> sotto la matrice apre il menu.</p>
-<p><strong>In basso</strong>, la tastiera DK1 con i suoi comandi.</p>
+<div class="fullcrop">{crop(0, 0, 2432, 930, 174)}</div>
+<p>I due pannelli dello strumento sono affiancati, per tenere ogni comando grande e leggibile.</p>
+<p><strong>A sinistra</strong>, il banco dei dispositivi: i tre oscillatori, il rumore e gli ingressi nella metà
+sinistra; i trattamenti e lo strumento a lancetta nella metà destra.</p>
+<p><strong>In alto a destra</strong>, la matrice, il joystick, il pulsante Attack e i comandi delle due uscite. La
+targhetta <em>PSM-3</em> sotto la matrice apre il menu.</p>
+<p><strong>In basso a destra</strong>, la tastiera DK1 con i suoi comandi.</p>
 <p>Trascina l'angolo della finestra per ridimensionarla: le proporzioni restano fisse e la misura scelta viene
-ricordata.</p></div></div>
+ricordata.</p>
 <h2>Il primo suono</h2>
 <p>All'apertura è caricato il preset <strong>Tastiera base</strong>. Suona un tasto della tua tastiera MIDI, o fai clic
 sulla tastiera a schermo: senti l'Oscillatore 1 passare attraverso l'inviluppo.</p>
@@ -227,7 +227,7 @@ cambiare timbro.</li>
               "cosa più utile che puoi fare."))
     rowt = "".join(f"<tr><td>{tag(str(i+1))}</td><td>{r}</td></tr>" for i, r in enumerate(ROWS))
     colt = "".join(f"<tr><td>{tag(chr(65+i))}</td><td>{c}</td></tr>" for i, c in enumerate(COLS))
-    a(f'''<div class="mxref"><div>{crop(34, 800, 730, 600, 96)}</div>
+    a(f'''<div class="mxref"><div>{crop(1226, 20, 730, 600, 96)}</div>
 <div><p>Le <strong>righe</strong> sono ciò che esce dai dispositivi: i segnali degli oscillatori, il rumore, gli
 ingressi, il filtro, l'inviluppo, il modulatore ad anello, il riverbero e le due tensioni del joystick.</p>
 <p>Le <strong>colonne</strong> sono ciò che entra. Le prime otto, da A a H, sono ingressi di segnale: lo strumento a
@@ -267,31 +267,31 @@ si rompe; al massimo tace o urla.</p>
     a(chapter("4", "I dispositivi", RED,
               "Il VCS3 ha sorgenti, che producono un segnale, e trattamenti, che ne modificano uno. In questo capitolo "
               "trovi che cosa fa ciascuno e quali righe e colonne della matrice gli appartengono."))
-    a(device("Oscillator 1", (34, 20, 600, 192, 78),
+    a(device("Oscillator 1", (34, 20, 600, 222, 78),
              f"<p>La sorgente principale. Copre tutto lo spettro udibile e scende abbastanza da servire anche come "
              f"modulazione lenta. Ha due uscite con livello separato: una sinusoide ({tag('1')}) e una rampa "
              f"({tag('2')}), più ricca di armonici. La colonna {tag('I')} ne comanda la frequenza.</p>",
              [("Frequency", "Da circa 1 Hz a oltre 10 kHz. Ogni divisione vale un'ottava e mezza; a 6 suona il do centrale."),
               ("Shape", "Agisce solo sulla sinusoide: pura a 5, sempre più ronzante verso 0 e verso 10."),
               ("Level", "Il livello delle due uscite alla matrice.")]))
-    a(device("Oscillator 2", (34, 212, 600, 192, 78),
+    a(device("Oscillator 2", (34, 242, 600, 223, 78),
              f"<p>Stessa estensione dell'Oscillatore 1, forme d'onda diverse: quadra ({tag('3')}) e triangolo "
              f"({tag('4')}). La colonna {tag('J')} ne comanda la frequenza. Accordato vicino all'Oscillatore 1 dà "
              f"battimenti; i due non restano mai perfettamente insieme, come nello strumento.</p>",
              [("Shape", "Cambia entrambe le uscite: a 5 quadra simmetrica e triangolo; verso gli estremi la quadra diventa un impulso stretto e il triangolo un dente di sega."),
               ("Level", "Livelli di quadra e triangolo.")]))
-    a(device("Oscillator 3", (34, 404, 600, 192, 78),
+    a(device("Oscillator 3", (34, 465, 600, 222, 78),
              f"<p>L'oscillatore lento, da un ciclo ogni quaranta secondi a 500 Hz. È soprattutto una sorgente di "
              f"controllo: vibrati, tremoli, aperture del filtro, ritmi. Si sente come nota solo con Frequency oltre 8. "
              f"Uscite: quadra ({tag('5')}) e triangolo ({tag('6')}); la colonna {tag('K')} ne comanda la frequenza.</p>",
              [("Shape", "Come nell'Oscillatore 2. A 0 e a 10 il triangolo diventa una rampa che scende o che sale: utile per scale e glissandi."),
               ("Level", "Decide quanto è profonda la modulazione che mandi altrove.")]))
-    a(device("Noise Generator", (34, 596, 301, 192, 50),
+    a(device("Noise Generator", (34, 687, 301, 223, 50),
              f"<p>Rumore: vento, mare, vapore, piatti e rullanti. Esce sulla riga {tag('7')}. Di solito lo si fa passare "
              f"nel filtro e nell'inviluppo.</p>",
              [("Colour", "Al centro rumore bianco; a sinistra più cupo, a destra più chiaro e sibilante."),
               ("Level", "Livello alla matrice.")]))
-    a(device("Filter / Oscillator", (800, 20, 406, 192, 78),
+    a(device("Filter / Oscillator", (800, 20, 406, 222, 78),
              f"<p>Il filtro è il carattere del VCS3. Riceve il segnale dalla colonna {tag('H')} e lo restituisce sulla "
              f"riga {tag('10')}; la colonna {tag('N')} ne comanda la frequenza. Fa tre cose, secondo la posizione di "
              f"Response.</p><p>Preferisce segnali bassi: se l'ingresso è forte satura e ingrossa il suono. Per un "
@@ -299,14 +299,14 @@ si rompe; al massimo tace o urla.</p>
              [("Frequency", "Il punto in cui il filtro taglia, o la nota che emette quando oscilla."),
               ("Response", "A 0 passa-basso: toglie gli acuti. Verso 5 esalta una banda, come un wah-wah. Oltre 6 circa il filtro oscilla da solo e diventa una sorgente di sinusoide molto pura."),
               ("Level", "Livello alla matrice.")]))
-    a(device("Ring Modulator", (634, 20, 166, 192, 36),
+    a(device("Ring Modulator", (634, 20, 166, 222, 36),
              f"<p>Moltiplica due segnali, che entrano dalle colonne {tag('E')} e {tag('F')}; il risultato esce sulla "
              f"riga {tag('13')}. Con due note produce la loro somma e la loro differenza: campane, metalli, voci "
              f"robotiche. Servono entrambi gli ingressi: senza uno dei due non esce nulla.</p>"
              f"<p>Reagisce ai cambiamenti: se a un ingresso arriva una tensione ferma, tace finché quella non si "
              f"muove. È il trucco dei preset Pizzicato e Bowing.</p>",
              [("Level", "Livello alla matrice. Tieni bassi i segnali in ingresso: se sono forti, distorce.")]))
-    a(device("Envelope Shaper", (634, 212, 572, 192, 78),
+    a(device("Envelope Shaper", (634, 242, 572, 223, 78),
              f"<p>Dà forma al suono nel tempo. Il segnale entra dalla colonna {tag('D')} ed esce, modellato, sulla riga "
              f"{tag('12')}. Il ciclo ha quattro tempi: il suono cresce (Attack), resta (On), svanisce (Decay), tace "
              f"(Off), e poi ricomincia da solo. La spia rossa è accesa durante Attack e On.</p>"
@@ -318,24 +318,24 @@ si rompe; al massimo tace o urla.</p>
               ("Decay", "Da pochi millesimi a quindici secondi."),
               ("Off", "La pausa prima di ripartire. Oltre 7 il ciclo non riparte da solo: serve un tasto o il pulsante Attack. Con la tastiera tienilo a 10."),
               ("Trapezoid, Signal", "I livelli delle righe 11 e 12.")]))
-    a(device("Reverberation", (634, 404, 278, 192, 46),
+    a(device("Reverberation", (634, 465, 278, 222, 46),
              f"<p>Un riverbero a molla: entra dalla colonna {tag('G')}, esce sulla riga {tag('14')}. Scuro e un po' "
              f"metallico, come le molle vere. La colonna {tag('M')} comanda Mix, cosa rara per un riverbero: puoi farlo "
              f"aprire e chiudere a ritmo.</p>",
              [("Mix", "A 0 solo il suono diretto, a 10 quasi solo le molle."),
               ("Level", "Livello alla matrice.")]))
-    a(device("Input Level", (335, 596, 299, 192, 50),
+    a(device("Input Level", (335, 687, 299, 223, 50),
              f"<p>I due ingressi dello strumento, sulle righe {tag('8')} e {tag('9')}. Qui arrivano le tensioni e "
              f"l'oscillatore della tastiera DK1 e, nella versione VST3, l'audio che la DAW manda al plugin.</p>",
              [("Channel 1, 2", "Il livello di ciò che entra. Con la tastiera, Channel 1 regola anche l'intervallo fra i tasti: vedi il capitolo 5.")]))
-    a(device("Output Filter e uscite", (634, 596, 306, 192, 50),
+    a(device("Output Filter e uscite", (634, 687, 306, 223, 50),
              f"<p>Le colonne {tag('B')} e {tag('C')} sono le due uscite. Ogni patch deve avere almeno un pin in una "
              f"delle due. Le colonne {tag('O')} e {tag('P')} ne comandano il livello: un oscillatore lento lì crea "
              f"un tremolo, il joystick una dissolvenza.</p>",
              [("Output Filter", "Un controllo di tono: piatto a 5, più scuro verso 0, più sottile verso 10."),
               ("Mute", "In giù senti l'uscita di linea. In su senti il suono attraverso i piccoli altoparlanti interni dello strumento: stretto e un po' distorto."),
-              ("Level, Pan", "Nel pannello orizzontale: volume e posizione stereo di ciascuna uscita.")]))
-    a(device("Joystick, Attack e Meter", (780, 800, 426, 380, 60),
+              ("Level, Pan", "Accanto alla matrice: volume e posizione stereo di ciascuna uscita.")]))
+    a(device("Joystick, Attack e Meter", (1972, 20, 426, 380, 60),
              f"<p>Il <strong>joystick</strong> produce due tensioni, sulle righe {tag('15')} e {tag('16')}. È il modo "
              f"più rapido per esplorare un patch e per suonarlo dal vivo. Resta dove lo lasci; il doppio clic lo "
              f"riporta al centro. Le manopole Range ne limitano l'escursione.</p>"
@@ -350,7 +350,7 @@ si rompe; al massimo tace o urla.</p>
     a(chapter("5", "Tastiera e MIDI", YELLOW,
               "Le note della tua tastiera arrivano alla DK1, e la DK1 le porta nella matrice come faceva l'originale: "
               "sotto forma di tensioni sugli ingressi."))
-    a(f'''<div class="fullcrop">{crop(34, 1420, 1172, 270, 178)}</div>
+    a(f'''<div class="fullcrop">{crop(1226, 640, 1172, 270, 174)}</div>
 <h2>Come la tastiera entra nel patch</h2>
 <p>La DK1 è monofonica: suona una nota alla volta, l'ultima premuta. Manda due cose allo strumento, una per ingresso,
 e due interruttori decidono quali.</p>
