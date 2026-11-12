@@ -16,8 +16,9 @@ constexpr float kMidX = 634.0f;                                 // divisione tra
 constexpr float kLowTop = 800.0f, kLowBottom = 1400.0f;         // pannello della matrice (coordinate originali)
 constexpr float kKbTop = 1420.0f, kKbBottom = 1690.0f;          // tastiera DK1 (coordinate originali)
 constexpr float kShiftX = 1192.0f, kShiftY = -780.0f;
-constexpr float kShiftFrom = 795.0f;                            // tutto cio' che sta sotto questa quota viene spostato
-inline juce::Point<float> place (float x, float y) { return y >= kShiftFrom ? juce::Point<float> (x + kShiftX, y + kShiftY) : juce::Point<float> (x, y); }
+// I comandi della colonna di destra sono marcati sommando kR alla loro quota originale.
+constexpr float kR = 10000.0f;
+inline juce::Point<float> place (float x, float y) { return y >= kR * 0.5f ? juce::Point<float> (x + kShiftX, y - kR + kShiftY) : juce::Point<float> (x, y); }
 inline juce::Rectangle<int> placeRect (int x, int y, int w, int h) { return { x + (int) kShiftX, y + (int) kShiftY, w, h }; }
 
 struct KnobSpec
@@ -66,17 +67,17 @@ const KnobSpec kKnobs[] = {
     { ParamId::outFilter1, 715, kRowY[3] - 14.0f, 44, Cap::Yellow, false, "CHANNEL 1", "", false },
     { ParamId::outFilter2, 850, kRowY[3] - 14.0f, 44, Cap::Yellow, false, "CHANNEL 2", "", false },
     // Pannello orizzontale
-    { ParamId::rangeX,    880,  890,  44, Cap::White, false, "", "15", false },
-    { ParamId::rangeY,    840,  1065, 44, Cap::White, false, "", "16", false },
-    { ParamId::out1Level, 845,  1295, 52, Cap::White, false, "LEVEL", "O", false },
-    { ParamId::out1Pan,   960,  1300, 42, Cap::White, false, "PAN (EXT.)", "", false },
-    { ParamId::out2Pan,   1060, 1300, 42, Cap::White, false, "PAN (EXT.)", "", false },
-    { ParamId::out2Level, 1155, 1295, 52, Cap::White, false, "LEVEL", "P", false },
+    { ParamId::rangeX,    880,  kR + 890.0f,  44, Cap::White, false, "", "15", false },
+    { ParamId::rangeY,    840,  kR + 1065.0f, 44, Cap::White, false, "", "16", false },
+    { ParamId::out1Level, 845,  kR + 1295.0f, 52, Cap::White, false, "LEVEL", "O", false },
+    { ParamId::out1Pan,   960,  kR + 1300.0f, 42, Cap::White, false, "PAN (EXT.)", "", false },
+    { ParamId::out2Pan,   1060, kR + 1300.0f, 42, Cap::White, false, "PAN (EXT.)", "", false },
+    { ParamId::out2Level, 1155, kR + 1295.0f, 52, Cap::White, false, "LEVEL", "P", false },
     // DK1
-    { ParamId::kbFreq,     88,  1500, 38, Cap::White, false, "FREQUENCY", "", false },
-    { ParamId::kbTuning,   180, 1500, 38, Cap::White, false, "TUNING", "", false },
-    { ParamId::kbLevel,    88,  1612, 38, Cap::White, false, "LEVEL", "", false },
-    { ParamId::kbDynRange, 180, 1612, 38, Cap::White, false, "DYNAMIC", "", false },
+    { ParamId::kbFreq,     88,  kR + 1500.0f, 38, Cap::White, false, "FREQUENCY", "", false },
+    { ParamId::kbTuning,   180, kR + 1500.0f, 38, Cap::White, false, "TUNING", "", false },
+    { ParamId::kbLevel,    88,  kR + 1612.0f, 38, Cap::White, false, "LEVEL", "", false },
+    { ParamId::kbDynRange, 180, kR + 1612.0f, 38, Cap::White, false, "DYNAMIC", "", false },
 };
 
 struct ToggleSpec { ParamId id; float x, y, w, h; ui::Toggle::Style style; bool invert; };
@@ -84,10 +85,10 @@ const ToggleSpec kToggles[] = {
     { ParamId::speaker1,     715,  kRowY[3] + 66.0f, 30, 40, ui::Toggle::Style::Lever, false },
     { ParamId::speaker2,     850,  kRowY[3] + 66.0f, 30, 40, ui::Toggle::Style::Lever, false },
     { ParamId::meterMode,    1170, kRowY[3] - 10.0f, 30, 44, ui::Toggle::Style::Lever, true },
-    { ParamId::mains,        1085, 885,  32, 46, ui::Toggle::Style::Lever, true },    // acceso = levetta in giu', verso ON
-    { ParamId::attackButton, 1140, 1065, 60, 60, ui::Toggle::Style::Button, false },
-    { ParamId::kbCh1Mode,    275,  1500, 30, 44, ui::Toggle::Style::Lever, false },
-    { ParamId::kbCh2Mode,    275,  1612, 30, 44, ui::Toggle::Style::Lever, false },
+    { ParamId::mains,        1085, kR + 885.0f,  32, 46, ui::Toggle::Style::Lever, true },    // acceso = levetta in giu', verso ON
+    { ParamId::attackButton, 1140, kR + 1065.0f, 60, 60, ui::Toggle::Style::Button, false },
+    { ParamId::kbCh1Mode,    275,  kR + 1500.0f, 30, 44, ui::Toggle::Style::Lever, false },
+    { ParamId::kbCh2Mode,    275,  kR + 1612.0f, 30, 44, ui::Toggle::Style::Lever, false },
 };
 
 const juce::Rectangle<int> kMatrixBounds (300, 890, 432, 432);       // coordinate originali

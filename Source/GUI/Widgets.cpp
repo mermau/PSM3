@@ -185,14 +185,14 @@ void Toggle::paint (juce::Graphics& g)
     else
     {
         // Ghiera cromata e levetta vista di fronte: e' inclinata di poco, quindi appare corta.
-        const float r = juce::jmin (b.getWidth(), b.getHeight()) * 0.24f;
+        const float r = juce::jmin (b.getWidth(), b.getHeight()) * 0.32f;
         juce::ColourGradient ring (juce::Colour (0xfff2f2f0), c.x - r, c.y - r, juce::Colour (0xff6f6f6d), c.x + r, c.y + r, false);
         g.setGradientFill (ring);
         g.fillEllipse (juce::Rectangle<float> (r * 2.0f, r * 2.0f).withCentre (c));
         g.setColour (juce::Colour (0xff3a3a3a));
         g.fillEllipse (juce::Rectangle<float> (r * 1.1f, r * 1.1f).withCentre (c));
         const bool up = invert ? ! on : on;
-        const float len = r * 0.95f;                                  // sporgenza apparente: circa 20 gradi di inclinazione
+        const float len = r * 1.05f;                                  // sporgenza apparente: circa 20 gradi di inclinazione
         const juce::Point<float> tip (c.x, c.y + (up ? -len : len));
         juce::Path bat;                                               // gambo che si allarga verso la punta
         const float w0 = r * 0.34f, w1 = r * 0.50f;
