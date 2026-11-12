@@ -1,0 +1,33 @@
+Test project /Users/runner/work/PSM3/PSM3/build
+      Start  1: test_dk1
+ 1/14 Test  #1: test_dk1 .........................   Passed    0.05 sec
+      Start  2: test_engine
+ 2/14 Test  #2: test_engine ......................   Passed    4.30 sec
+      Start  3: test_envelope
+ 3/14 Test  #3: test_envelope ....................   Passed    0.03 sec
+      Start  4: test_filter
+ 4/14 Test  #4: test_filter ......................   Passed    2.73 sec
+      Start  5: test_io
+ 5/14 Test  #5: test_io ..........................   Passed    0.12 sec
+      Start  6: test_matrix
+ 6/14 Test  #6: test_matrix ......................   Passed    0.02 sec
+      Start  7: test_measure
+ 7/14 Test  #7: test_measure .....................   Passed    0.02 sec
+      Start  8: test_noise
+ 8/14 Test  #8: test_noise .......................   Passed    0.53 sec
+      Start  9: test_osc12
+ 9/14 Test  #9: test_osc12 .......................   Passed    3.75 sec
+      Start 10: test_osc3
+10/14 Test #10: test_osc3 ........................   Passed    0.26 sec
+      Start 11: test_oversampler
+11/14 Test #11: test_oversampler .................   Passed    0.03 sec
+      Start 12: test_presets
+12/14 Test #12: test_presets .....................   Passed   15.45 sec
+      Start 13: test_reverb
+13/14 Test #13: test_reverb ......................   Passed    0.32 sec
+      Start 14: test_ringmod
+14/14 Test #14: test_ringmod .....................   Passed    0.17 sec
+
+100% tests passed out of 14
+
+Total Test time (real) =  27.82 sec

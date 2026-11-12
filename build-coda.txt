@@ -1,0 +1,80 @@
+
+RegisterExecutionPolicyException /Users/runner/work/PSM3/PSM3/build/gui_snapshot_artefacts/Release/gui_snapshot (in target 'gui_snapshot' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    builtin-RegisterExecutionPolicyException /Users/runner/work/PSM3/PSM3/build/gui_snapshot_artefacts/Release/gui_snapshot
+
+CodeSign /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/AU/PSM-3.component (in target 'PSM3_AU' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --timestamp --entitlements /Users/runner/work/PSM3/PSM3/build/build/PSM3_AU.build/Release/PSM-3.component.xcent --generate-entitlement-der /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/AU/PSM-3.component
+
+RegisterExecutionPolicyException /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/AU/PSM-3.component (in target 'PSM3_AU' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    builtin-RegisterExecutionPolicyException /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/AU/PSM-3.component
+
+Touch /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/AU/PSM-3.component (in target 'PSM3_AU' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    /usr/bin/touch -c /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/AU/PSM-3.component
+
+CodeSign /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/VST3/PSM-3.vst3 (in target 'PSM3_VST3' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --timestamp --entitlements /Users/runner/work/PSM3/PSM3/build/build/PSM3_VST3.build/Release/PSM-3.vst3.xcent --generate-entitlement-der /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/VST3/PSM-3.vst3
+/Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/VST3/PSM-3.vst3: replacing existing signature
+
+RegisterExecutionPolicyException /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/VST3/PSM-3.vst3 (in target 'PSM3_VST3' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    builtin-RegisterExecutionPolicyException /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/VST3/PSM-3.vst3
+
+Touch /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/VST3/PSM-3.vst3 (in target 'PSM3_VST3' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    /usr/bin/touch -c /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/VST3/PSM-3.vst3
+
+CreateUniversalBinary /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app/Contents/MacOS/PSM-3 normal arm64\ x86_64 (in target 'PSM3_Standalone' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo -create /Users/runner/work/PSM3/PSM3/build/build/PSM3_Standalone.build/Release/Objects-normal/arm64/Binary/PSM-3 /Users/runner/work/PSM3/PSM3/build/build/PSM3_Standalone.build/Release/Objects-normal/x86_64/Binary/PSM-3 -output /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app/Contents/MacOS/PSM-3
+
+PhaseScriptExecution CMake\ PostBuild\ Rules /Users/runner/work/PSM3/PSM3/build/build/PSM3_Standalone.build/Release/Script-2C87F295A8931AA6DE5C2EC5.sh (in target 'PSM3_Standalone' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    /bin/sh -c /Users/runner/work/PSM3/PSM3/build/build/PSM3_Standalone.build/Release/Script-2C87F295A8931AA6DE5C2EC5.sh
+
+CodeSign /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app (in target 'PSM3_Standalone' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --timestamp --entitlements /Users/runner/work/PSM3/PSM3/build/build/PSM3_Standalone.build/Release/PSM-3.app.xcent --generate-entitlement-der /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app
+
+RegisterExecutionPolicyException /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app (in target 'PSM3_Standalone' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    builtin-RegisterExecutionPolicyException /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app
+
+Validate /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app (in target 'PSM3_Standalone' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    builtin-validationUtility /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app -no-validate-extension -infoplist-subpath Contents/Info.plist
+
+Touch /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app (in target 'PSM3_Standalone' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    /usr/bin/touch -c /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app
+
+RegisterWithLaunchServices /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app (in target 'PSM3_Standalone' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    /System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f -R -trusted /Users/runner/work/PSM3/PSM3/build/PSM3_artefacts/Release/Standalone/PSM-3.app
+
+PhaseScriptExecution Generate\ CMakeFiles/ALL_BUILD /Users/runner/work/PSM3/PSM3/build/build/PSM3.build/Release/ALL_BUILD.build/Script-827579E321262C0012FFE133.sh (in target 'ALL_BUILD' from project 'PSM3')
+    cd /Users/runner/work/PSM3/PSM3
+    /bin/sh -c /Users/runner/work/PSM3/PSM3/build/build/PSM3.build/Release/ALL_BUILD.build/Script-827579E321262C0012FFE133.sh
+Build all projects
+
+note: Run script build phase 'Generate CMakeFiles/ZERO_CHECK' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'ZERO_CHECK' from project 'PSM3')
+note: Run script build phase 'Generate CMakeFiles/PSM3_vst3_helper' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'PSM3_vst3_helper' from project 'PSM3')
+note: Run script build phase 'Generate CMakeFiles/ALL_BUILD' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'ALL_BUILD' from project 'PSM3')
+note: Run script build phase 'CMake PostBuild Rules' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'PSM3_VST3' from project 'PSM3')
+note: Run script build phase 'CMake PostBuild Rules' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'PSM3_Standalone' from project 'PSM3')
+note: Run script build phase 'CMake PostBuild Rules' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'PSM3_AU' from project 'PSM3')
+** BUILD SUCCEEDED **
+

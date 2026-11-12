@@ -1,0 +1,10 @@
+1161:** BUILD SUCCEEDED **
+1162-
+1163-
+1164-ProcessProductPackaging "" /Users/runner/work/PSM3/PSM3/build/build/test_ringmod.build/Release/test_ringmod.xcent (in target 'test_ringmod' from project 'PSM3')
+1165-    cd /Users/runner/work/PSM3/PSM3
+1166-    
+1167-    Entitlements:
+--
+3977:** BUILD SUCCEEDED **
+3978-

@@ -1,0 +1,33 @@
+ok   tutti i parametri di Params.h esistono
+ok   nessun parametro in piu'
+ok   all'avvio e' caricato 'Tastiera base'
+ok   senza note: silenzio
+ok   nota 60: suona entro 100 ms
+ok   dopo il rilascio e 2 s: silenzio
+ok   tastiera a schermo: suona
+ok   tastiera a schermo: rilascio
+ok   stato: parametri identici dopo salvataggio e ripristino
+ok   stato: pin identici
+ok   stato: mappa MIDI ripristinata
+ok   stato corrotto: nulla cambia
+ok   stato di versione futura: accettato
+ok   versione futura: applicati i campi riconosciuti
+ok   versione futura: valori fuori scala limitati
+ok   versione futura: pin non validi ignorati
+ok   stato di un altro plugin: rifiutato
+ok   CC1 = 127: joystick verticale a 10
+ok   Pitch Bend al centro: joystick orizzontale a 5
+ok   CC64 premuto: pulsante Attack
+ok   CC64 rilasciato
+ok   MIDI Learn: CC74 assegnato a Filter Frequency
+ok   MIDI Learn: il primo valore viene gia' applicato
+ok   un CC comanda un solo parametro
+ok   assegnazione rimossa
+ok   All Notes Off: nessuna nota bloccata
+ok   tutti i preset di fabbrica si caricano
+ok   i preset non spengono lo strumento
+ok   preset utente: scritto
+ok   preset utente: riletto identico
+ok   preset utente corrotto: rifiutato senza danni
+
+TUTTO OK
