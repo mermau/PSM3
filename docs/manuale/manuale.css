@@ -1,0 +1,118 @@
+@font-face { font-family: "Adventor"; font-weight: 400; src: url("../../resources/fonts/texgyreadventor-regular.otf"); }
+@font-face { font-family: "Adventor"; font-weight: 700; src: url("../../resources/fonts/texgyreadventor-bold.otf"); }
+
+:root { --ink: #161616; --panel: #dcdcd8; --panel2: #ecece9; --blue: #2d6fd2; --green: #2aa860; --red: #d3302b; --yellow: #e7c32f; --wood: #7a4a2a; --grey: #6a6a66; }
+
+@page { size: A4; margin: 20mm 18mm 22mm 18mm;
+        @bottom-right { content: counter(page); font-family: "Adventor"; font-size: 9pt; color: #6a6a66; }
+        @bottom-left { content: "PSM-3  Manuale d'uso"; font-family: "Adventor"; font-size: 8pt; color: #6a6a66; } }
+@page cover { margin: 0; @bottom-right { content: none; } @bottom-left { content: none; } }
+
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; font-family: "Charter", "Iowan Old Style", Georgia, serif; font-size: 10.4pt; line-height: 1.5; color: var(--ink); }
+p { margin: 0 0 2.6mm; orphans: 3; widows: 3; hyphens: auto; }
+strong { font-weight: 700; }
+em { font-style: italic; }
+h1, h2, h3, .tag, th, caption, .lead, .cv-brand, .cv-kind, .cv-sub, .cv-foot, .tn, .tt, dt { font-family: "Adventor", "Avenir Next", sans-serif; }
+
+/* ---------- copertina ---------- */
+.cover { page: cover; width: 210mm; height: 297mm; background: var(--panel); position: relative; overflow: hidden;
+         border-left: 9mm solid var(--wood); border-right: 9mm solid var(--wood); break-after: page; }
+.cv-top { position: absolute; top: 16mm; left: 14mm; right: 14mm; display: flex; justify-content: space-between; font-size: 11pt; }
+.cv-brand { font-weight: 700; }
+.cv-title { position: absolute; top: 42mm; left: 14mm; right: 14mm; }
+.cv-title h1 { font-size: 96pt; line-height: .9; margin: 0; font-weight: 700; letter-spacing: -2pt; }
+.cv-sub { font-size: 24pt; margin: 3mm 0 9mm; }
+.cv-desc { font-size: 12pt; line-height: 1.45; max-width: 120mm; }
+.cv-mx { position: absolute; left: 14mm; bottom: 34mm; }
+.cv-mx svg { width: 118mm; height: auto; }
+.cv-foot { position: absolute; bottom: 14mm; left: 14mm; right: 14mm; display: flex; justify-content: space-between; font-size: 9.5pt;
+           border-top: 1.2pt solid var(--ink); padding-top: 3mm; }
+
+/* ---------- indice ---------- */
+.toc { break-after: page; }
+h1.plain { font-size: 30pt; margin: 6mm 0 12mm; font-weight: 700; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc li { display: grid; grid-template-columns: 14mm 78mm 1fr; align-items: baseline; padding: 4.2mm 0; border-top: .8pt solid var(--ink); }
+.toc li:last-child { border-bottom: .8pt solid var(--ink); }
+.tn { font-size: 16pt; font-weight: 700; }
+.tt { font-size: 13pt; font-weight: 700; }
+.td { color: var(--grey); font-size: 10pt; }
+.note { margin-top: 12mm; max-width: 120mm; color: #3a3a38; }
+
+/* ---------- capitoli ---------- */
+.chapter { break-before: page; }
+header.ch { display: flex; align-items: center; gap: 4mm; background: var(--ink); color: #fff; padding: 5mm 6mm; margin-bottom: 6mm; }
+header.ch .cap { width: 11mm; height: 11mm; border-radius: 50%; border: 2.2mm solid #2b2b2b; outline: .6mm solid #000; flex: none; }
+header.ch .chn { font-family: "Adventor"; font-size: 22pt; font-weight: 700; min-width: 8mm; }
+header.ch h1 { font-size: 22pt; margin: 0; font-weight: 700; line-height: 1.1; }
+.lead { hyphens: manual; font-size: 13pt; line-height: 1.4; max-width: 150mm; margin: 0 0 7mm; }
+h2 { font-size: 14pt; font-weight: 700; margin: 7mm 0 2.6mm; break-after: avoid; }
+h2.bar { display: inline-block; background: var(--ink); color: #fff; padding: 1.2mm 3mm; font-size: 11.5pt; margin: 0 0 2.6mm; letter-spacing: .2pt; }
+h3 { font-size: 11.5pt; font-weight: 700; margin: 0 0 1.4mm; break-after: avoid; }
+
+.cols { column-count: 2; column-gap: 9mm; font-size: 9.8pt; line-height: 1.45; }
+.cols h2 { margin-top: 5mm; }
+.timeline { background: var(--panel2); padding: 4mm 5mm; margin-bottom: 7mm; break-inside: avoid; }
+.timeline dl { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-flow: column; grid-template-rows: auto auto; gap: .6mm 6mm; margin: 0; }
+.timeline dt { font-weight: 700; font-size: 13pt; } .timeline dd { margin: 0; font-size: 9pt; line-height: 1.35; }
+
+/* etichette come sul pannello */
+.tag { display: inline-block; background: var(--ink); color: #fff; font-weight: 700; font-size: 8pt; line-height: 1; padding: 1mm 1.4mm .8mm; margin: 0 .4mm;
+       min-width: 4.6mm; text-align: center; vertical-align: 1px; }
+.pinc { display: inline-block; width: 2.4mm; height: 2.4mm; border-radius: 50%; margin: 0 1mm 0 -.2mm; vertical-align: 0; border: .25mm solid var(--ink); }
+.pinc.w { background: #f4f2ea; } .pinc.r { background: var(--red); } .pinc.g { background: var(--green); }
+.pinc.big { width: 6mm; height: 6mm; margin: 0; border-width: .4mm; }
+
+.crop { overflow: hidden; border: .5pt solid #8a8a86; background: var(--panel); flex: none; }
+.crop img { display: block; max-width: none; }
+
+ol.steps { margin: 0 0 3mm; padding-left: 6mm; }
+ol.steps li { margin-bottom: 1.6mm; padding-left: 1mm; }
+ol.steps li::marker { font-family: "Adventor"; font-weight: 700; }
+
+table { border-collapse: collapse; width: 100%; }
+caption { text-align: left; font-weight: 700; font-size: 10pt; padding-bottom: 1.6mm; }
+table.keys, table.ctl { margin: 2mm 0 4mm; font-size: 9.6pt; line-height: 1.38; }
+table.keys th, table.ctl th { text-align: left; font-weight: 700; font-size: 9pt; vertical-align: top; padding: 1.7mm 4mm 1.7mm 0; width: 44mm; border-top: .5pt solid #9a9a96; }
+table.keys td, table.ctl td { vertical-align: top; padding: 1.7mm 0; border-top: .5pt solid #9a9a96; }
+table.ctl th { width: 30mm; }
+table.ctl.wide th { width: 52mm; }
+tr { break-inside: avoid; }
+
+.fig { display: flex; gap: 8mm; align-items: flex-start; margin: 2mm 0 5mm; break-inside: avoid; }
+.figtxt { font-size: 9.8pt; line-height: 1.42; }
+
+/* matrice */
+svg.mx { display: block; }
+svg.mx .mxl { font-family: "Adventor"; font-weight: 700; fill: #161616; }
+.mxref { display: flex; gap: 8mm; align-items: flex-start; margin-bottom: 5mm; break-inside: avoid; }
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; break-inside: avoid; }
+table.ref { font-size: 9.4pt; }
+table.ref td { padding: .7mm 0; border-top: .4pt solid #b4b4b0; }
+table.ref td:first-child { width: 11mm; }
+.patchread { display: flex; gap: 8mm; align-items: flex-start; margin: 2mm 0 4mm; break-inside: avoid; }
+table.pinsT td, table.pinsT th { vertical-align: top; padding: 2mm 3mm 2mm 0; border-top: .5pt solid #9a9a96; text-align: left; }
+table.pinsT th { width: 18mm; font-size: 9.5pt; } table.pinsT td:first-child { width: 10mm; }
+
+/* dispositivi */
+.device { break-inside: avoid; margin: 0 0 6mm; padding-top: 1mm; }
+.dv { display: flex; gap: 7mm; align-items: flex-start; }
+.dvtxt { flex: 1; font-size: 9.9pt; line-height: 1.44; }
+.dvimg { flex: none; }
+.fullcrop { margin: 0 0 5mm; }
+
+/* preset */
+.preset { display: flex; gap: 7mm; align-items: flex-start; padding: 4.2mm 0; border-top: .8pt solid var(--ink); break-inside: avoid; }
+.ptx { flex: 1; font-size: 9.6pt; line-height: 1.4; }
+.ptx p { margin-bottom: 1.8mm; }
+.pins { font-size: 9pt; }
+.pv { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; margin-top: 1mm; }
+.pv table { font-size: 8.4pt; line-height: 1.25; font-family: "Adventor"; }
+.pv th { text-align: left; font-weight: 400; padding: .5mm 2mm .5mm 0; color: #3a3a38; }
+.pv td { text-align: right; font-weight: 700; padding: .5mm 0; width: 21mm; white-space: nowrap; }
+.pv tr { border-bottom: .3pt solid #c4c4c0; }
+
+.tech { display: flex; gap: 7mm; align-items: flex-start; padding: 4mm 0; border-top: .8pt solid var(--ink); break-inside: avoid; font-size: 9.9pt; line-height: 1.44; }
+.colophon { margin-top: 9mm; font-size: 8.6pt; color: var(--grey); max-width: 130mm; }

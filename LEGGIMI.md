@@ -5,6 +5,8 @@ matrice **EMS VCS3 "Putney"** (1969) con la tastiera **DK1**. È ricavato dal ma
 manuale di servizio (specifiche, schemi delle schede A, B, C e procedure di taratura) e dalla
 letteratura sul filtro a diodi.
 
+Il manuale d'uso completo, con la storia dello strumento, la guida ai dispositivi e le matrici di tutti i preset, è **Manuale-PSM-3.pdf**.
+
 ## Installazione
 
 1. Apri la cartella `PSM-3` e fai doppio clic su **Installa PSM-3.command**

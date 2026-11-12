@@ -77,6 +77,7 @@ jobs:
           cp scripts/installa.command "dist/PSM-3/Installa PSM-3.command"
           chmod +x "dist/PSM-3/Installa PSM-3.command"
           cp LEGGIMI.md "dist/PSM-3/"
+          cp docs/manuale/Manuale-PSM-3.pdf "dist/PSM-3/"
           lipo -info "dist/PSM-3/PSM-3.vst3/Contents/MacOS/PSM-3"
           lipo -archs "dist/PSM-3/PSM-3.vst3/Contents/MacOS/PSM-3" | grep -q arm64
           lipo -archs "dist/PSM-3/PSM-3.vst3/Contents/MacOS/PSM-3" | grep -q x86_64

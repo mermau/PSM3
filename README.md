@@ -21,6 +21,7 @@ Il workflow compila il binario universale, esegue i test del motore, il test del
 - `Source/Plugin/` — processore JUCE (parametri, MIDI Learn, stato, preset) e preset di fabbrica.
 - `Source/GUI/` — pannelli disegnati in vettoriale.
 - `Tests/` — test nativi del motore; `Tests/plugin/` — test che richiedono JUCE (solo in CI).
+- `docs/manuale/` — manuale d'uso: `build_manual.py` genera l'HTML (legge i preset dal codice), Chrome lo converte in PDF.
 - `docs/superpowers/` — specifica e piano di implementazione.
 
 ## Test del motore in locale
