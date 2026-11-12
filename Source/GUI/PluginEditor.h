@@ -1,4 +1,4 @@
-// PSM-3 — finestra del plugin: pannello verticale, pannello orizzontale con matrice e joystick, tastiera DK1.
+// PSM-3 — finestra del plugin: banco dei dispositivi a sinistra; a destra, incolonnate, matrice e tastiera DK1.
 #pragma once
 #include "Widgets.h"
 
@@ -10,7 +10,7 @@ public:
     void paint (juce::Graphics&) override;
     void refresh();                                  // spia, strumento, pin, tasti, MIDI Learn
 
-    static constexpr int baseW = 1240, baseH = 1700;
+    static constexpr int baseW = 2432, baseH = 930;      // banco a sinistra, matrice e tastiera a destra
 
 private:
     struct HotSpot : public juce::Component

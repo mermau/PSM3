@@ -66,6 +66,7 @@ if(PSM3_BUILD_PLUGIN)
         PLUGIN_MANUFACTURER_CODE Coef
         PLUGIN_CODE Psm3
         PRODUCT_NAME "PSM-3"
+        ICON_BIG resources/icon.png            # icona dell'app Standalone
         DESCRIPTION "PSM-3 (PsychoMatrix-3): sintetizzatore a matrice"
         FORMATS VST3 AU Standalone
         IS_SYNTH TRUE

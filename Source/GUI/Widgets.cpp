@@ -81,9 +81,10 @@ void Knob::paint (juce::Graphics& g)
         g.fillEllipse (juce::Rectangle<float> (rCap * 2.0f, rCap * 2.0f).withCentre (c));
         if (dragging)
         {
-            g.setColour (t.ink);
-            g.setFont (font (11.0f, true));
-            g.drawText (juce::String (value, 2), juce::Rectangle<float> (60.0f, 14.0f).withCentre ({ c.x, c.y + rDial * 0.36f }), juce::Justification::centred, false);
+            // valore in bianco al centro del cappuccio blu, ben leggibile mentre si gira
+            g.setColour (juce::Colours::white);
+            g.setFont (font (rCap * 0.62f, true));
+            g.drawText (juce::String (value, 2), juce::Rectangle<float> (rCap * 2.0f, rCap).withCentre (c), juce::Justification::centred, false);
         }
     }
     else
@@ -183,18 +184,26 @@ void Toggle::paint (juce::Graphics& g)
     }
     else
     {
-        // ghiera cromata e levetta rossa: su o giu'
-        const float r = juce::jmin (b.getWidth(), b.getHeight()) * 0.22f;
+        // Ghiera cromata e levetta vista di fronte: e' inclinata di poco, quindi appare corta.
+        const float r = juce::jmin (b.getWidth(), b.getHeight()) * 0.24f;
         juce::ColourGradient ring (juce::Colour (0xfff2f2f0), c.x - r, c.y - r, juce::Colour (0xff6f6f6d), c.x + r, c.y + r, false);
         g.setGradientFill (ring);
         g.fillEllipse (juce::Rectangle<float> (r * 2.0f, r * 2.0f).withCentre (c));
+        g.setColour (juce::Colour (0xff3a3a3a));
+        g.fillEllipse (juce::Rectangle<float> (r * 1.1f, r * 1.1f).withCentre (c));
         const bool up = invert ? ! on : on;
-        const float len = b.getHeight() * 0.40f;
+        const float len = r * 0.95f;                                  // sporgenza apparente: circa 20 gradi di inclinazione
         const juce::Point<float> tip (c.x, c.y + (up ? -len : len));
-        g.setColour (juce::Colour (0xff8a8a88));
-        g.drawLine (juce::Line<float> (c, tip), r * 0.9f);
-        g.setColour (t.capRed);
-        g.fillEllipse (juce::Rectangle<float> (r * 1.3f, r * 1.3f).withCentre (tip));
+        juce::Path bat;                                               // gambo che si allarga verso la punta
+        const float w0 = r * 0.34f, w1 = r * 0.50f;
+        bat.startNewSubPath (c.x - w0, c.y); bat.lineTo (tip.x - w1, tip.y); bat.lineTo (tip.x + w1, tip.y); bat.lineTo (c.x + w0, c.y); bat.closeSubPath();
+        g.setColour (juce::Colours::black.withAlpha (0.25f));
+        g.fillEllipse (juce::Rectangle<float> (w1 * 2.2f, w1 * 1.6f).withCentre ({ tip.x + 1.5f, tip.y + 2.0f }));
+        g.setColour (t.capRed.darker (0.25f));
+        g.fillPath (bat);
+        juce::ColourGradient tipFill (t.capRed.brighter (0.45f), tip.x - w1 * 0.4f, tip.y - w1 * 0.5f, t.capRed.darker (0.2f), tip.x + w1, tip.y + w1, true);
+        g.setGradientFill (tipFill);
+        g.fillEllipse (juce::Rectangle<float> (w1 * 2.0f, w1 * 1.7f).withCentre (tip));
     }
     if (learning) { g.setColour (t.learn); g.drawRect (b.reduced (1.0f), 2.5f); }
 }

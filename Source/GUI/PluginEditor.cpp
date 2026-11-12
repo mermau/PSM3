@@ -6,12 +6,19 @@ using ui::Cap;
 namespace
 {
 // Geometria (pixel alle dimensioni di progetto)
-constexpr float kLeft = 34.0f, kRight = 1206.0f;                // bordi interni dei fianchi in legno
-constexpr float kUpTop = 20.0f, kUpBottom = 788.0f;             // pannello verticale
-constexpr float kLowTop = 800.0f, kLowBottom = 1400.0f;         // pannello orizzontale
-constexpr float kKbTop = 1420.0f, kKbBottom = 1690.0f;          // tastiera DK1
-constexpr float kRowY[4] = { 122.0f, 314.0f, 506.0f, 700.0f };  // centri delle quattro file di manopole
+constexpr float kLeft = 34.0f, kRight = 1206.0f;                // bordi del banco dei dispositivi (a sinistra)
+constexpr float kUpTop = 20.0f, kUpBottom = 910.0f;
+constexpr float kDiv[3] = { 242.0f, 465.0f, 687.0f };           // divisioni orizzontali tra le quattro file
+constexpr float kRowY[4] = { 138.0f, 361.0f, 583.0f, 808.0f };  // centri delle quattro file di manopole
 constexpr float kMidX = 634.0f;                                 // divisione tra oscillatori e trattamenti
+// Matrice e tastiera sono descritte nelle coordinate del vecchio schema verticale (sotto il banco)
+// e poi spostate in blocco nella colonna di destra.
+constexpr float kLowTop = 800.0f, kLowBottom = 1400.0f;         // pannello della matrice (coordinate originali)
+constexpr float kKbTop = 1420.0f, kKbBottom = 1690.0f;          // tastiera DK1 (coordinate originali)
+constexpr float kShiftX = 1192.0f, kShiftY = -780.0f;
+constexpr float kShiftFrom = 795.0f;                            // tutto cio' che sta sotto questa quota viene spostato
+inline juce::Point<float> place (float x, float y) { return y >= kShiftFrom ? juce::Point<float> (x + kShiftX, y + kShiftY) : juce::Point<float> (x, y); }
+inline juce::Rectangle<int> placeRect (int x, int y, int w, int h) { return { x + (int) kShiftX, y + (int) kShiftY, w, h }; }
 
 struct KnobSpec
 {
@@ -56,8 +63,8 @@ const KnobSpec kKnobs[] = {
     { ParamId::revMix,   705, kRowY[2], 48, Cap::Green, false, "MIX", "M", false },
     { ParamId::revLevel, 835, kRowY[2], 48, Cap::White, false, "LEVEL", "14", false },
     // Filtri d'uscita
-    { ParamId::outFilter1, 715, 686, 44, Cap::Yellow, false, "CHANNEL 1", "", false },
-    { ParamId::outFilter2, 850, 686, 44, Cap::Yellow, false, "CHANNEL 2", "", false },
+    { ParamId::outFilter1, 715, kRowY[3] - 14.0f, 44, Cap::Yellow, false, "CHANNEL 1", "", false },
+    { ParamId::outFilter2, 850, kRowY[3] - 14.0f, 44, Cap::Yellow, false, "CHANNEL 2", "", false },
     // Pannello orizzontale
     { ParamId::rangeX,    880,  890,  44, Cap::White, false, "", "15", false },
     { ParamId::rangeY,    840,  1065, 44, Cap::White, false, "", "16", false },
@@ -74,16 +81,16 @@ const KnobSpec kKnobs[] = {
 
 struct ToggleSpec { ParamId id; float x, y, w, h; ui::Toggle::Style style; bool invert; };
 const ToggleSpec kToggles[] = {
-    { ParamId::speaker1,     715,  764,  30, 40, ui::Toggle::Style::Lever, false },
-    { ParamId::speaker2,     850,  764,  30, 40, ui::Toggle::Style::Lever, false },
-    { ParamId::meterMode,    1170, 690,  30, 44, ui::Toggle::Style::Lever, true },
+    { ParamId::speaker1,     715,  kRowY[3] + 66.0f, 30, 40, ui::Toggle::Style::Lever, false },
+    { ParamId::speaker2,     850,  kRowY[3] + 66.0f, 30, 40, ui::Toggle::Style::Lever, false },
+    { ParamId::meterMode,    1170, kRowY[3] - 10.0f, 30, 44, ui::Toggle::Style::Lever, true },
     { ParamId::mains,        1085, 885,  32, 46, ui::Toggle::Style::Lever, true },    // acceso = levetta in giu', verso ON
     { ParamId::attackButton, 1140, 1065, 60, 60, ui::Toggle::Style::Button, false },
     { ParamId::kbCh1Mode,    275,  1500, 30, 44, ui::Toggle::Style::Lever, false },
     { ParamId::kbCh2Mode,    275,  1612, 30, 44, ui::Toggle::Style::Lever, false },
 };
 
-const juce::Rectangle<int> kMatrixBounds (300, 890, 432, 432);
+const juce::Rectangle<int> kMatrixBounds (300, 890, 432, 432);       // coordinate originali
 const juce::Rectangle<int> kNameplate (70, 1350, 440, 44);
 }
 
@@ -96,26 +103,26 @@ PanelContent::PanelContent (PSM3Processor& p) : proc (p), joystick (p), matrix (
     for (const auto& s : kKnobs)
     {
         auto* k = knobs.add (new ui::Knob (proc, s.id, s.cap, s.vernier));
-        k->setBounds (juce::Rectangle<float> (s.half * 2.0f, s.half * 2.0f).withCentre ({ s.x, s.y }).toNearestInt());
+        k->setBounds (juce::Rectangle<float> (s.half * 2.0f, s.half * 2.0f).withCentre (place (s.x, s.y)).toNearestInt());
         k->onContextMenu = menu;
         addAndMakeVisible (k);
     }
     for (const auto& s : kToggles)
     {
         auto* t = toggles.add (new ui::Toggle (proc, s.id, s.style, s.invert));
-        t->setBounds (juce::Rectangle<float> (s.w, s.h).withCentre ({ s.x, s.y }).toNearestInt());
+        t->setBounds (juce::Rectangle<float> (s.w, s.h).withCentre (place (s.x, s.y)).toNearestInt());
         t->onContextMenu = menu;
         addAndMakeVisible (t);
     }
 
-    envLamp.setBounds (760, 236, 26, 26);       addAndMakeVisible (envLamp);
-    mainsLamp.setBounds (1122, 870, 30, 30);    addAndMakeVisible (mainsLamp);
-    meter.setBounds (952, 622, 180, 136);       addAndMakeVisible (meter);
-    joystick.setBounds (915, 980, 170, 170);    addAndMakeVisible (joystick);
+    envLamp.setBounds (760, (int) kRowY[1] - 78, 26, 26);          addAndMakeVisible (envLamp);
+    mainsLamp.setBounds (placeRect (1122, 870, 30, 30));            addAndMakeVisible (mainsLamp);
+    meter.setBounds (952, (int) kRowY[3] - 80, 180, 150);           addAndMakeVisible (meter);
+    joystick.setBounds (placeRect (915, 980, 170, 170));            addAndMakeVisible (joystick);
     joystick.onContextMenu = [this] (juce::Component& c, int index) { showParamMenu (c, index); };
-    matrix.setBounds (kMatrixBounds);           addAndMakeVisible (matrix);
-    keyboard.setBounds (345, 1432, 855, 248);   addAndMakeVisible (keyboard);
-    nameplate.setBounds (kNameplate);           addAndMakeVisible (nameplate);
+    matrix.setBounds (kMatrixBounds.translated ((int) kShiftX, (int) kShiftY));    addAndMakeVisible (matrix);
+    keyboard.setBounds (placeRect (345, 1432, 855, 248));           addAndMakeVisible (keyboard);
+    nameplate.setBounds (kNameplate.translated ((int) kShiftX, (int) kShiftY));    addAndMakeVisible (nameplate);
     nameplate.onClick = [this] { showMainMenu(); };
     nameplate.setMouseCursor (juce::MouseCursor::PointingHandCursor);
 
@@ -140,7 +147,7 @@ void PanelContent::refresh()
         joystick.setLearning (learning == (int) ParamId::joyX ? 0 : (learning == (int) ParamId::joyY ? 1 : -1));
     }
     const auto name = proc.getCurrentPresetName();
-    if (name != shownPreset) { shownPreset = name; repaint (kNameplate.expanded (4).withWidth (680)); }
+    if (name != shownPreset) { shownPreset = name; repaint (kNameplate.translated ((int) kShiftX, (int) kShiftY).expanded (4).withWidth (680)); }
 }
 
 //==============================================================================
@@ -267,31 +274,36 @@ void PanelContent::paint (juce::Graphics& g)
     for (int i = 0; i < 60; ++i)           // venature
         g.drawLine ((float) ((i * 37) % 34), 0.0f, (float) ((i * 37) % 34) + 3.0f, (float) baseH, 0.6f);
     for (int i = 0; i < 60; ++i)
-        g.drawLine (kRight + (float) ((i * 29) % 34), 0.0f, kRight + (float) ((i * 29) % 34) - 3.0f, (float) baseH, 0.6f);
+        g.drawLine ((float) baseW - 34.0f + (float) ((i * 29) % 34), 0.0f, (float) baseW - 34.0f + (float) ((i * 29) % 34) - 3.0f, (float) baseH, 0.6f);
 
-    auto panel = [&] (float top, float bottom)
+    auto panel = [&] (float left, float top, float bottom)
     {
-        const juce::Rectangle<float> r (kLeft, top, kRight - kLeft, bottom - top);
+        const juce::Rectangle<float> r (left, top, kRight - kLeft, bottom - top);
         g.setColour (juce::Colours::black.withAlpha (0.35f));
         g.fillRect (r.translated (0.0f, 3.0f));
         juce::ColourGradient cg (t.panel, 0.0f, top, t.panelShade, 0.0f, bottom, false);
         g.setGradientFill (cg);
         g.fillRect (r);
     };
-    panel (kUpTop, kUpBottom);
-    panel (kLowTop, kLowBottom);
-    panel (kKbTop, kKbBottom);
+    panel (kLeft, kUpTop, kUpBottom);
+    panel (kLeft + kShiftX, kLowTop + kShiftY, kLowBottom + kShiftY);
+    panel (kLeft + kShiftX, kKbTop + kShiftY, kKbBottom + kShiftY);
 
     drawUpperPanel (g);
-    drawLowerPanel (g);
-    drawKeyboardPanel (g);
+    {
+        juce::Graphics::ScopedSaveState save (g);
+        g.addTransform (juce::AffineTransform::translation (kShiftX, kShiftY));
+        drawLowerPanel (g);
+        drawKeyboardPanel (g);
+    }
 
     // etichette e sigle delle manopole
     g.setColour (t.ink);
     for (const auto& s : kKnobs)
     {
-        if (s.label[0] != 0) ui::textAt (g, s.label, s.x, s.y - s.half - 10.0f, s.half > 40.0f ? 13.0f : 11.0f);
-        if (s.tag[0] != 0)   ui::tag (g, s.tag, s.x + (s.vernier ? s.half * 0.95f : 0.0f), s.y + s.half + (s.vernier ? -8.0f : 10.0f), 11.0f, s.roundTag);
+        const auto c = place (s.x, s.y);
+        if (s.label[0] != 0) ui::textAt (g, s.label, c.x, c.y - s.half - 10.0f, s.half > 40.0f ? 13.0f : 11.0f);
+        if (s.tag[0] != 0)   ui::tag (g, s.tag, c.x + (s.vernier ? s.half * 0.95f : 0.0f), c.y + s.half + (s.vernier ? -8.0f : 10.0f), 11.0f, s.roundTag);
         g.setColour (t.ink);
     }
 }
@@ -302,26 +314,26 @@ void PanelContent::drawUpperPanel (juce::Graphics& g)
     g.setColour (t.ink);
     const float th = 1.6f;
     // divisioni
-    for (float y : { 212.0f, 404.0f, 596.0f }) g.drawLine (kLeft, y, kMidX, y, th);
+    for (float y : kDiv) g.drawLine (kLeft, y, kMidX, y, th);
     g.drawLine (kMidX, kUpTop, kMidX, kUpBottom, th);
-    g.drawLine (kMidX, 212.0f, kRight, 212.0f, th);
-    g.drawLine (kMidX, 404.0f, 912.0f, 404.0f, th);
-    g.drawLine (912.0f, 404.0f, 912.0f, 596.0f, th);
-    g.drawLine (kMidX, 596.0f, kRight, 596.0f, th);
-    g.drawLine (800.0f, kUpTop, 800.0f, 212.0f, th);
-    g.drawLine (335.0f, 596.0f, 335.0f, kUpBottom, th);
-    g.drawLine (940.0f, 596.0f, 940.0f, kUpBottom, th);
+    g.drawLine (kMidX, kDiv[0], kRight, kDiv[0], th);
+    g.drawLine (kMidX, kDiv[1], 912.0f, kDiv[1], th);
+    g.drawLine (912.0f, kDiv[1], 912.0f, kDiv[2], th);
+    g.drawLine (kMidX, kDiv[2], kRight, kDiv[2], th);
+    g.drawLine (800.0f, kUpTop, 800.0f, kDiv[0], th);
+    g.drawLine (335.0f, kDiv[2], 335.0f, kUpBottom, th);
+    g.drawLine (940.0f, kDiv[2], 940.0f, kUpBottom, th);
 
     ui::titleBar (g, "OSCILLATOR 1", kLeft, kUpTop);
-    ui::titleBar (g, "OSCILLATOR 2", kLeft, 212.0f);
-    ui::titleBar (g, "OSCILLATOR 3", kLeft, 404.0f);
-    ui::titleBar (g, "NOISE GENERATOR", kLeft, 596.0f);
-    ui::titleBar (g, "INPUT LEVEL", 335.0f, 596.0f);
+    ui::titleBar (g, "OSCILLATOR 2", kLeft, kDiv[0]);
+    ui::titleBar (g, "OSCILLATOR 3", kLeft, kDiv[1]);
+    ui::titleBar (g, "NOISE GENERATOR", kLeft, kDiv[2]);
+    ui::titleBar (g, "INPUT LEVEL", 335.0f, kDiv[2]);
     ui::titleBar (g, "RING MODULATOR", kMidX, kUpTop, 13.0f);
     ui::titleBar (g, "FILTER/OSCILLATOR", 800.0f, kUpTop);
-    ui::titleBar (g, "ENVELOPE SHAPER", kMidX, 212.0f);
-    ui::titleBar (g, "REVERBERATION", kMidX, 404.0f);
-    ui::titleBar (g, "OUTPUT FILTER", kMidX, 596.0f);
+    ui::titleBar (g, "ENVELOPE SHAPER", kMidX, kDiv[0]);
+    ui::titleBar (g, "REVERBERATION", kMidX, kDiv[1]);
+    ui::titleBar (g, "OUTPUT FILTER", kMidX, kDiv[2]);
 
     g.setColour (t.ink);
     // gamme degli oscillatori
@@ -361,15 +373,16 @@ void PanelContent::drawUpperPanel (juce::Graphics& g)
     ui::textAt (g, "Low", 82.0f, kRowY[3] + 58.0f, 9.5f);
     ui::textAt (g, "High", 170.0f, kRowY[3] + 58.0f, 9.5f);
     // filtri d'uscita e muting
-    ui::textAt (g, "Low", 676.0f, 742.0f, 9.5f); ui::textAt (g, "High", 756.0f, 742.0f, 9.5f);
-    ui::textAt (g, "Low", 811.0f, 742.0f, 9.5f); ui::textAt (g, "High", 891.0f, 742.0f, 9.5f);
-    ui::textAt (g, "MUTE", 755.0f, 774.0f, 9.5f, true);
-    ui::textAt (g, "MUTE", 890.0f, 774.0f, 9.5f, true);
+    const float y4 = kRowY[3];
+    ui::textAt (g, "Low", 676.0f, y4 + 42.0f, 9.5f); ui::textAt (g, "High", 756.0f, y4 + 42.0f, 9.5f);
+    ui::textAt (g, "Low", 811.0f, y4 + 42.0f, 9.5f); ui::textAt (g, "High", 891.0f, y4 + 42.0f, 9.5f);
+    ui::textAt (g, "MUTE", 755.0f, y4 + 76.0f, 9.5f, true);
+    ui::textAt (g, "MUTE", 890.0f, y4 + 76.0f, 9.5f, true);
     // strumento
-    ui::tag (g, "A", 1042.0f, 772.0f, 11.0f, true);
+    ui::tag (g, "A", 1042.0f, y4 + 86.0f, 11.0f, true);
     g.setColour (t.ink);
-    ui::textAt (g, "CONTROL", 1170.0f, 628.0f, 8.5f); ui::textAt (g, "VOLTAGES", 1170.0f, 640.0f, 8.5f);
-    ui::textAt (g, "SIGNAL", 1170.0f, 740.0f, 8.5f);  ui::textAt (g, "LEVELS", 1170.0f, 752.0f, 8.5f);
+    ui::textAt (g, "CONTROL", 1170.0f, y4 - 72.0f, 8.5f); ui::textAt (g, "VOLTAGES", 1170.0f, y4 - 60.0f, 8.5f);
+    ui::textAt (g, "SIGNAL", 1170.0f, y4 + 40.0f, 8.5f);  ui::textAt (g, "LEVELS", 1170.0f, y4 + 52.0f, 8.5f);
 }
 
 void PanelContent::drawLowerPanel (juce::Graphics& g)
@@ -419,7 +432,7 @@ void PanelContent::drawLowerPanel (juce::Graphics& g)
         ui::tag (g, juce::String::charToString ((juce::juce_wchar) ('A' + c)), x, mb.getBottom() + 14.0f, 10.5f, c < 8);
         g.setColour (t.ink);
     }
-    ui::textAt (g, "SIGNAL INPUTS", mb.getX() + 4.0f * cw, 810.0f, 10.0f, true);
+    ui::textAt (g, "SIGNAL INPUTS", mb.getX() + 4.0f * cw, 810.0f, 10.0f, true);   // coordinate originali: il chiamante trasla
     ui::textAt (g, "CONTROL INPUTS", mb.getX() + 12.0f * cw, 810.0f, 10.0f, true);
     g.drawLine (mb.getX() + 2.0f, 818.0f, mb.getX() + 8.0f * cw - 4.0f, 818.0f, 1.0f);
     g.drawLine (mb.getX() + 8.0f * cw + 4.0f, 818.0f, mb.getRight() - 2.0f, 818.0f, 1.0f);
@@ -476,7 +489,7 @@ PSM3Editor::PSM3Editor (PSM3Processor& p) : AudioProcessorEditor (p), proc (p), 
     addAndMakeVisible (content);
     setResizable (true, true);
     const double ratio = (double) PanelContent::baseW / (double) PanelContent::baseH;
-    setResizeLimits (PanelContent::baseW * 2 / 5, PanelContent::baseH * 2 / 5, PanelContent::baseW * 2, PanelContent::baseH * 2);
+    setResizeLimits (PanelContent::baseW * 7 / 20, PanelContent::baseH * 7 / 20, PanelContent::baseW * 2, PanelContent::baseH * 2);
     if (auto* c = getConstrainer()) c->setFixedAspectRatio (ratio);
 
     // Scala iniziale: quella salvata, altrimenti quanto basta a stare nello schermo.
@@ -485,9 +498,10 @@ PSM3Editor::PSM3Editor (PSM3Processor& p) : AudioProcessorEditor (p), proc (p), 
     {
         scale = 0.6f;
         if (const auto* display = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay())
-            scale = (float) display->userBounds.getHeight() * 0.86f / (float) PanelContent::baseH;
+            scale = juce::jmin ((float) display->userBounds.getHeight() * 0.84f / (float) PanelContent::baseH,
+                                (float) display->userBounds.getWidth() * 0.96f / (float) PanelContent::baseW);
     }
-    scale = juce::jlimit (0.4f, 2.0f, scale);
+    scale = juce::jlimit (0.35f, 2.0f, scale);
     setSize (juce::roundToInt (PanelContent::baseW * scale), juce::roundToInt (PanelContent::baseH * scale));
     startTimerHz (30);
 }
